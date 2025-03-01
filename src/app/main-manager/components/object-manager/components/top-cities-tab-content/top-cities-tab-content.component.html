@@ -1,0 +1,32 @@
+@if(topCities.length){
+  <main class="object__top-cities">
+    @for (topCity of topCities; track topCity; let i = $index, let first = $first, let last = $last) {
+      <div class="top-cities__city">
+        <button mat-mini-fab class="city__up" [disabled]="$first" (click)="onUpCity(i)">
+          <mat-icon>arrow_upward</mat-icon>
+        </button>
+        <button mat-mini-fab class="city__down" [disabled]="$last" (click)="onDownCity(i)">
+          <mat-icon>arrow_downward</mat-icon>
+        </button>
+        <mat-form-field class="form__field city__country">
+          <mat-label>Country</mat-label>
+          <input matInput [(ngModel)]="topCity.city.country.code">
+        </mat-form-field>
+        <mat-form-field class="form__field city__region">
+          <mat-label>Region</mat-label>
+          <input matInput [(ngModel)]="topCity.city.region">
+        </mat-form-field>
+        <mat-form-field class="form__field city__name">
+          <mat-label>City</mat-label>
+          <input matInput [(ngModel)]="topCity.city.name">
+        </mat-form-field>
+        <mat-form-field class="form__field city__listeners">
+          <mat-label>Listeners</mat-label>
+          <input matInput [(ngModel)]="topCity.listeners">
+        </mat-form-field>
+      </div>
+    }
+  </main>
+} @else {
+  <div class="object__no-data">No Data</div>
+}

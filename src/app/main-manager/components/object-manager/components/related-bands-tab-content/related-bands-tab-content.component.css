@@ -1,0 +1,67 @@
+.object__related-bands {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.related-bands__band {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: .5rem;
+}
+
+.band__image {
+  height: 56px;
+  margin-top: 10px;
+  border-radius: 1rem;
+}
+
+.band__img {
+  max-width: 56px;
+  max-height: 56px;
+  border-radius: .3rem;
+}
+
+.band__name, .band__id {
+  width: 250px;
+}
+
+.band__url {
+  width: 400px;
+}
+
+.form__field {
+  margin-bottom: -30px;
+}
+
+.form__field, .band__image {
+  margin-left: 1rem;
+}
+
+/* .object__related-bands {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-evenly;
+}
+
+.related-bands__band{
+  max-width: 280px;
+}
+
+.band__index {
+  text-align: center;
+  line-height: 2.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.band__content {
+  padding: 0;
+}
+
+.band__avatar-image {
+  margin-bottom: -2rem !important;
+  width: 100%;
+} */

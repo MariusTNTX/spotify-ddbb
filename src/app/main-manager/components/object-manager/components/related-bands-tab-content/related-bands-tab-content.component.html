@@ -1,0 +1,47 @@
+@if(relatedBands.length){
+  <main class="object__related-bands">
+    @for (band of relatedBands; track band; let i = $index, let first = $first, let last = $last) {
+      <div class="related-bands__band">
+        <button mat-mini-fab class="band__up" [disabled]="$first" (click)="onUpBand(i)">
+          <mat-icon>arrow_upward</mat-icon>
+        </button>
+        <button mat-mini-fab class="band__down" [disabled]="$last" (click)="onDownBand(i)">
+          <mat-icon>arrow_downward</mat-icon>
+        </button>
+        <div class="band__image">
+          <img [src]="band.targetBand.avatarImage" class="band__img">
+        </div>
+        <mat-form-field class="form__field band__name">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="band.targetBand.name">
+        </mat-form-field>
+        <mat-form-field class="form__field band__id">
+          <mat-label>ID</mat-label>
+          <input matInput [(ngModel)]="band.targetBand.id">
+        </mat-form-field>
+        <mat-form-field class="form__field band__url">
+          <mat-label>Image</mat-label>
+          <input matInput [(ngModel)]="band.targetBand.avatarImage">
+        </mat-form-field>
+      </div>
+    }
+    <!-- @for (band of relatedBands; track band) {
+      <mat-card class="related-bands__band" appearance="outlined">
+        <mat-card-header>
+          <div mat-card-avatar class="band__index">#{{ band.index + 1 }}</div>
+          <mat-card-title>{{ band.targetBand.name }}</mat-card-title>
+          <mat-card-subtitle>{{ band.targetBand.id }}</mat-card-subtitle>
+        </mat-card-header>
+        <img mat-card-image [src]="band.targetBand.avatarImage">
+        <mat-card-content class="band__content">
+          <mat-form-field class="form__field band__avatar-image">
+            <mat-label>Avatar Image</mat-label>
+            <input matInput [(ngModel)]="band.targetBand.avatarImage">
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+    } -->
+  </main>
+} @else {
+  <div class="object__no-data">No Data</div>
+}

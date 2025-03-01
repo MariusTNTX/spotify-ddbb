@@ -1,0 +1,16 @@
+.object__top-cities {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.form__field {
+  margin-left: 1rem;
+}
+
+.city__country, .city__region {
+  width: 90px;
+}
+
+.city__listeners {
+  width: 140px;
+}

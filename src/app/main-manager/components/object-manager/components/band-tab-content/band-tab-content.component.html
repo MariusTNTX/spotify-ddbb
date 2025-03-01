@@ -1,0 +1,74 @@
+@if(bands.length){
+  <mat-card class="object__band" appearance="outlined">
+
+    <mat-card-header class="band__header" [style.backgroundColor]="'#'+bands[0].backBaseColor">
+      <div mat-card-avatar class="band__image-container" [style.backgroundImage]="'url('+bands[0].avatarImage+')'"></div>
+      <mat-card-title class="band__title">{{ bands[0].name }}</mat-card-title>
+      <mat-card-subtitle class="band__subtitle">({{ bands[0].onList ? 'On List' : 'External' }})</mat-card-subtitle>
+    </mat-card-header>
+
+    <img mat-card-image class="band__image" [src]="bands[0].headerImage">
+
+    <mat-card-content class="band__content" [style.borderColor]="'#'+bands[0].backBaseColor">
+      <main class="band__form">
+
+        <!-- Name -->
+        <mat-form-field class="form__field band__name">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="bands[0].name">
+        </mat-form-field>
+        <!-- Back Base Color -->
+        <mat-form-field class="form__field band__back-base-color">
+          <mat-label>Back Base Color</mat-label>
+          <input matInput [(ngModel)]="bands[0].backBaseColor">
+        </mat-form-field>
+        <!-- On List -->
+        <mat-checkbox class="band__on-list" [(ngModel)]="bands[0].onList" color="white">On List</mat-checkbox>
+
+        <!-- ID -->
+        <mat-form-field class="form__field band__id">
+          <mat-label>ID</mat-label>
+          <input matInput [(ngModel)]="bands[0].id">
+        </mat-form-field>
+        <!-- Share ID -->
+        <mat-form-field class="form__field band__share-id">
+          <mat-label>Share ID</mat-label>
+          <input matInput [(ngModel)]="bands[0].shareId">
+        </mat-form-field>
+
+        <!-- Listeners -->
+        <mat-form-field class="form__field band__monthly-listeners">
+          <mat-label>Monthly Listeners</mat-label>
+          <input matInput [(ngModel)]="bands[0].monthlyListeners">
+        </mat-form-field>
+        <!-- Followers -->
+        <mat-form-field class="form__field band__followers">
+          <mat-label>Followers</mat-label>
+          <input matInput [(ngModel)]="bands[0].followers">
+        </mat-form-field>
+
+        <!-- Avatar Image -->
+        <mat-form-field class="form__field band__avatar-image">
+          <mat-label>Avatar Image</mat-label>
+          <input matInput [(ngModel)]="bands[0].avatarImage">
+        </mat-form-field>
+
+        <!-- Header Image -->
+        <mat-form-field class="form__field band__header-image">
+          <mat-label>Header Image</mat-label>
+          <input matInput [(ngModel)]="bands[0].headerImage">
+        </mat-form-field>
+
+        <!-- Description -->
+        <mat-form-field class="form__field band__description">
+          <mat-label>Description</mat-label>
+          <textarea matInput rows="10">{{ bands[0].description || '' }}</textarea>
+        </mat-form-field>
+      
+      </main>
+    </mat-card-content>
+
+  </mat-card>
+} @else {
+  <div class="object__no-data">No Data</div>
+}

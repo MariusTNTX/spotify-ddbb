@@ -1,0 +1,52 @@
+.object__band {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.band__header {
+  border-radius: 3px 3px 0 0;
+}
+
+.band__title, .band__subtitle {
+  color: white;
+}
+
+.band__image-container {
+  background-size: cover;
+}
+
+.band__content {
+  padding-top: 16px;
+  border-left: 3px solid;
+  border-right: 3px solid;
+  border-bottom: 3px solid;
+  border-radius: 0 0 3px 3px;
+}
+
+.band__form {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.form__field {
+  margin-bottom: -1rem;
+}
+
+.band__id, .band__share-id, .band__name, .band__monthly-listeners, .band__followers {
+  flex: 1 1 calc(50% - 0.5rem);
+}
+
+.band__back-base-color {
+  flex-basis: calc(30% - 0.5rem);
+}
+
+.band__on-list {
+  flex-basis: calc(20% - 0.5rem - 8px);
+  padding-top: .5rem;
+}
+
+.band__avatar-image, .band__header-image, .band__description {
+  flex-basis: 100%;
+}

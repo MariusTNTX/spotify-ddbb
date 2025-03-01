@@ -1,0 +1,10 @@
+.object__container {
+  display: flex;
+  margin: 16px;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.object__tab-content {
+  width: 100%;
+}

@@ -1,0 +1,19 @@
+@if(externalLinks.length){
+  <main class="object__external-links">
+    @for (link of externalLinks; track link) {
+      <div class="external_links__link">
+        <mat-icon aria-hidden="false" fontIcon="link" color="accent"></mat-icon>
+        <mat-form-field class="form__field link__name">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="link.name">
+        </mat-form-field>
+        <mat-form-field class="form__field link__url">
+          <mat-label>URL</mat-label>
+          <input matInput [(ngModel)]="link.url">
+        </mat-form-field>
+      </div>
+    }
+  </main>
+} @else {
+  <div class="object__no-data">No Data</div>
+}

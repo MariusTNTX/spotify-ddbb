@@ -1,0 +1,92 @@
+Countries
+- code: string(2) PK
+- name: string(100) nullable=false unique
+
+Cities
+- id: autoincrement PK
+- name: string(150) nullable=false unique
+- country: string(2) nullable=false FK=Countries.code(Delete Cascade)
+- region: string(5) nullable=false
+
+Bands
+- id: string(22) PK
+- name: string(100) nullable=false unique
+- avatarImage: string(url) nullable=false
+- lastUpload: date nullable=false default=currentDate
+- monthlyListeners: number(1000000000) nullable=true
+- followers: number(1000000000) nullable=true
+- shareId: string(22) nullable=true
+- headerImage: string(url) nullable=true
+- description: string(20000) nullable=true
+- backBaseColor: string(6) nullable=true
+- hasFullProfile: boolean nullable=true default=false
+- verified: boolean nullable=true default=false
+- onList: boolean nullable=true default=false
+
+BandTopCities
+- id: autoincrement PK
+- band: number(ID) nullable=false FK=Bands.Id(Delete Cascade)
+- city: number(ID) nullable=false FK=Cities.Id(Delete Cascade)
+- listeners: number(1000000000) nullable=false
+- index: number(5) nullable=false
+
+BandExternalLinks
+- id: autoincrement PK
+- band: number(ID) nullable=false FK=Bands.Id(Delete Cascade)
+- name: string(20) nullable=false check name='FACEBOOK'|'INSTAGRAM'|'TWITTER'|'WIKIPEDIA'
+- url: string(url) nullable=false
+
+BandImages
+- id: autoincrement PK
+- band: number(ID) nullable=false FK=Bands.Id(Delete Cascade)
+- image: string(url) nullable=false
+
+RelatedBands
+- id: autoincrement PK
+- originBand: number(ID) nullable=false FK=Bands.Id(Delete Cascade)
+- targetBand: number(ID) nullable=false FK=Bands.Id(Delete Cascade)
+- index: number(50) nullable=false
+
+Records
+- id: autoincrement PK
+- name: string(100) nullable=false unique
+
+Albums
+- id: string(22) PK
+- name: string(255) nullable=false
+- type: string(20) nullable=true default='ALBUM' check type='ALBUM'|'SINGLE'|'EP'|'COMPILATION'
+- length: number(10000000) nullable=false
+- coverArt: string(url) nullable=false
+- totalTracks: number(100) nullable=false
+- year: number(3000) nullable=false
+- lastUpload: date nullable=false default=currentDate
+- month: number(12) nullable=true
+- day: number(31) nullable=true
+- parentAlbum: number(ID) nullable=true FK=Albums.Id
+- record: number(ID) nullable=true FK=Records.Id
+- shareUrl: string(url) nullable=true
+
+BandAlbums
+- id: autoincrement PK
+- band: number(ID) nullable=false FK=Bands.Id(Delete Cascade)
+- album: number(ID) nullable=false FK=Albums.Id(Delete Cascade)
+
+Tracks
+- id: string(22) PK
+- album: number(ID) nullable=false FK=Albums.Id
+- name: string(255) nullable=false
+- playcount: number(1000000000000) nullable=false
+- length: number(10000000) nullable=false
+- trackNumber: number(100) nullable=false
+- lastUpload: date nullable=false default=currentDate
+- discNumber: number(10) nullable=true default=1
+- playcountTrack: number(ID) nullable=true FK=Tracks.Id
+- parentTrack: number(ID) nullable=true FK=Tracks.Id
+- originalTrack: number(ID) nullable=true FK=Tracks.Id
+- maxPlaycountTrack: number(ID) nullable=true FK=Tracks.Id
+- isExplicit: boolean default=false
+
+TrackBands
+- id: autoincrement PK
+- track: number(ID) nullable=false FK=Tracks.Id(Delete Cascade)
+- band: number(ID) nullable=false FK=Albums.Id(Delete Cascade)
