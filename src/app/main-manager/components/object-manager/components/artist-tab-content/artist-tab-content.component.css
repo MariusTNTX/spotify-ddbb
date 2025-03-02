@@ -1,21 +1,21 @@
-.object__band {
+.object__artist {
   max-width: 750px;
   margin: 0 auto;
 }
 
-.band__header {
+.artist__header {
   border-radius: 3px 3px 0 0;
 }
 
-.band__title, .band__subtitle {
+.artist__title, .artist__subtitle {
   color: white;
 }
 
-.band__image-container {
+.artist__image-container {
   background-size: cover;
 }
 
-.band__content {
+.artist__content {
   padding-top: 16px;
   border-left: 3px solid;
   border-right: 3px solid;
@@ -23,7 +23,7 @@
   border-radius: 0 0 3px 3px;
 }
 
-.band__form {
+.artist__form {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -34,19 +34,19 @@
   margin-bottom: -1rem;
 }
 
-.band__id, .band__share-id, .band__name, .band__monthly-listeners, .band__followers {
+.artist__id, .artist__share-id, .artist__name, .artist__monthly-listeners, .artist__followers {
   flex: 1 1 calc(50% - 0.5rem);
 }
 
-.band__back-base-color {
+.artist__back-base-color {
   flex-basis: calc(30% - 0.5rem);
 }
 
-.band__on-list {
+.artist__on-list {
   flex-basis: calc(20% - 0.5rem - 8px);
   padding-top: .5rem;
 }
 
-.band__avatar-image, .band__header-image, .band__description {
+.artist__avatar-image, .artist__header-image, .artist__description {
   flex-basis: 100%;
 }

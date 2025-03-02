@@ -9,7 +9,7 @@ export interface City {
   region: string
 }
 
-export interface Band {
+export interface Artist {
   id: string,
   name: string,
   avatarImage: string,
@@ -25,60 +25,50 @@ export interface Band {
   lastUpload?: Date,
 }
 
-export interface BandTopCity {
-  band: Band,
+export interface ArtistTopCity {
+  artist: Artist,
   city: City,
   listeners: number,
   index: number
 }
 
-export interface BandExternalLink {
-  band: Band,
+export interface ArtistExternalLink {
+  artist: Artist,
   name: 'FACEBOOK'|'INSTAGRAM'|'TWITTER'|'WIKIPEDIA',
   url: string
 }
 
-export interface BandImage {
-  band: Band,
+export interface ArtistImage {
+  artist: Artist,
   image: string
 }
 
-export interface RelatedBand {
-  originBand: Band,
-  targetBand: Band,
+export interface RelatedArtist {
+  originArtist: Artist,
+  targetArtist: Artist,
   index: number
 }
 
-export interface Record {
-  name: string
-}
-
-export interface Album {
+export interface Release {
   id: string,
   name: string,
   type: 'ALBUM'|'SINGLE'|'EP'|'COMPILATION',
-  length: number,
   coverArt: string,
   totalTracks: number,
   year: number,
+  artist: Artist
   month?: number,
   day?: number,
-  parentAlbum?: Album,
-  record?: Record,
-  shareUrl?: string,
+  parentRelease?: Release,
+  shareId?: string,
   lastUpload?: Date,
-
-  bands?: Band[]
-}
-
-export interface BandAlbum {
-  band: Band,
-  album: Album
+  _children?: Release[],
+  _suggestions?: Release[],
 }
 
 export interface Track {
   id: string,
-  album: Album,
+  release: Release,
   name: string,
   playcount: number,
   length: number,
@@ -91,25 +81,23 @@ export interface Track {
   isExplicit: boolean,
   lastUpload?: Date,
 
-  bands?: Band[]
+  artists?: Artist[]
 }
 
-export interface TrackBand {
+export interface TrackArtist {
   track: Track,
-  band: Band
+  artist: Artist
 }
 
 export interface SpotifyObjects {
   countries: Country[],
   cities: City[],
-  bands: Band[],
-  bandTopCities: BandTopCity[],
-  bandExternalLinks: BandExternalLink[],
-  bandImages: BandImage[],
-  relatedBands: RelatedBand[],
-  records: Record[],
-  albums: Album[],
-  bandAlbums: BandAlbum[],
+  artists: Artist[],
+  artistTopCities: ArtistTopCity[],
+  artistExternalLinks: ArtistExternalLink[],
+  artistImages: ArtistImage[],
+  relatedArtists: RelatedArtist[],
+  releases: Release[],
   tracks: Track[],
-  trackBands: TrackBand[]
+  trackArtists: TrackArtist[]
 }

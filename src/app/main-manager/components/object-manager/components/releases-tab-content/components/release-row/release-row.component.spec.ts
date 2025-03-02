@@ -3,21 +3,21 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { BandTabContentComponent } from './band-tab-content.component';
+import { ReleaseRowComponent } from './release-row.component';
 
-describe('BandTabContentComponent', () => {
-  let component: BandTabContentComponent;
-  let fixture: ComponentFixture<BandTabContentComponent>;
+describe('ReleaseRowComponent', () => {
+  let component: ReleaseRowComponent;
+  let fixture: ComponentFixture<ReleaseRowComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BandTabContentComponent ]
+      declarations: [ ReleaseRowComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BandTabContentComponent);
+    fixture = TestBed.createComponent(ReleaseRowComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

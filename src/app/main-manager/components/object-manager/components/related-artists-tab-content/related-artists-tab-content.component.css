@@ -1,0 +1,39 @@
+.object__related-artists {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.related-artists__artist {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: .5rem;
+}
+
+.artist__image {
+  height: 56px;
+  margin-top: 10px;
+  border-radius: 1rem;
+}
+
+.artist__img {
+  max-width: 56px;
+  max-height: 56px;
+  border-radius: .3rem;
+}
+
+.artist__name, .artist__id {
+  width: 250px;
+}
+
+.artist__url {
+  width: 400px;
+}
+
+.form__field {
+  margin-bottom: -30px;
+}
+
+.form__field, .artist__image {
+  margin-left: 1rem;
+}

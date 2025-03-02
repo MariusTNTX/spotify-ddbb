@@ -1,0 +1,31 @@
+@if(relatedArtists.length){
+  <main class="object__related-artists">
+    @for (artist of relatedArtists; track artist; let i = $index, let first = $first, let last = $last) {
+      <div class="related-artists__artist">
+        <button mat-mini-fab class="artist__up" [disabled]="$first" (click)="onUpArtist(i)">
+          <mat-icon>arrow_upward</mat-icon>
+        </button>
+        <button mat-mini-fab class="artist__down" [disabled]="$last" (click)="onDownArtist(i)">
+          <mat-icon>arrow_downward</mat-icon>
+        </button>
+        <div class="artist__image">
+          <img [src]="artist.targetArtist.avatarImage" class="artist__img">
+        </div>
+        <mat-form-field class="form__field artist__name">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="artist.targetArtist.name">
+        </mat-form-field>
+        <mat-form-field class="form__field artist__id">
+          <mat-label>ID</mat-label>
+          <input matInput [(ngModel)]="artist.targetArtist.id">
+        </mat-form-field>
+        <mat-form-field class="form__field artist__url">
+          <mat-label>Image</mat-label>
+          <input matInput [(ngModel)]="artist.targetArtist.avatarImage">
+        </mat-form-field>
+      </div>
+    }
+  </main>
+} @else {
+  <div class="object__no-data">No Data</div>
+}

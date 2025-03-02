@@ -1,0 +1,45 @@
+<div class="releases__release" [class]="{ 'releases__release--child': isChild }">
+  @if(isChild){
+    <button mat-mini-fab class="release__unmatch" (click)="unmatch()">
+      <mat-icon>remove</mat-icon>
+    </button>
+  }
+  <div class="release__image">
+    <img [src]="release.coverArt" class="release__img">
+  </div>
+  @if(view === 'FORM' || !view){
+    <mat-form-field class="form__field release__name" [class]="{ 'release__name--child': isChild }">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="release.name">
+    </mat-form-field>
+  } @else {
+    <mat-form-field class="form__field release__name" [class]="{ 'release__name--child': isChild }">
+      <mat-label>{{ release.name }}</mat-label>
+      <input matInput [(ngModel)]="query">
+    </mat-form-field>
+  }
+  <mat-form-field class="form__field release__day">
+    <mat-label>Day</mat-label>
+    <input matInput [(ngModel)]="release.day">
+  </mat-form-field>
+  <mat-form-field class="form__field release__month">
+    <mat-label>Month</mat-label>
+    <input matInput [(ngModel)]="release.month">
+  </mat-form-field>
+  <mat-form-field class="form__field release__year">
+    <mat-label>Year</mat-label>
+    <input matInput [(ngModel)]="release.year">
+  </mat-form-field>
+  <mat-form-field class="form__field release__type">
+    <mat-label>Type</mat-label>
+    <mat-select [(ngModel)]="release.type">
+      @for (type of types; track type) {
+        <mat-option [value]="type">{{ type }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="form__field release__track-number">
+    <mat-label>Tracks</mat-label>
+    <input matInput [(ngModel)]="release.totalTracks">
+  </mat-form-field>
+</div>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BandExternalLink } from '../../../../interfaces';
+import { ArtistExternalLink } from '../../../../interfaces';
 import { SpotifyObjectsService } from '../../../../services/spotify-objects.service';
 import {MatListModule} from '@angular/material/list';
 import {MatIconModule} from '@angular/material/icon';
@@ -15,12 +15,12 @@ import { FormsModule } from '@angular/forms';
 })
 export class ExternalLinksTabContentComponent implements OnInit {
 
-  public externalLinks!: BandExternalLink[];
+  public externalLinks!: ArtistExternalLink[];
   
   constructor(private _spotifyService: SpotifyObjectsService) { }
 
   ngOnInit() {
-    this.externalLinks = this._spotifyService.bandExternalLinks;
+    this.externalLinks = this._spotifyService.artistExternalLinks;
   }
 
 }

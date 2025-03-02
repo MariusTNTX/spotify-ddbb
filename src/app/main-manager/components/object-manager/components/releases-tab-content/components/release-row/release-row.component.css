@@ -1,0 +1,47 @@
+.releases__release, .releases__release--child {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: .5rem;
+}
+
+.releases__release--child {
+  margin-left: 2rem;
+  opacity: 0.6;
+}
+
+.release__image {
+  height: 56px;
+  margin-top: 10px;
+  border-radius: 1rem;
+}
+
+.release__img {
+  max-width: 56px;
+  max-height: 56px;
+  border-radius: .3rem;
+}
+
+.release__day, .release__month, .release__year, .release__track-number {
+  width: 70px;
+}
+
+.release__type {
+  width: 180px;
+}
+
+.release__name {
+  width: 500px;
+}
+
+.release__name--child {
+  width: 428px;
+}
+
+.form__field {
+  margin-bottom: -30px;
+}
+
+.form__field, .release__image {
+  margin-left: 1rem;
+}

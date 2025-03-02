@@ -1,0 +1,19 @@
+.view__toggle {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.object__releases {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.release__query {
+  width: 25rem;
+}
+
+.form__field {
+  margin-bottom: -30px;
+}

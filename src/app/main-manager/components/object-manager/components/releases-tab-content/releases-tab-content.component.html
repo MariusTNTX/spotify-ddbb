@@ -1,0 +1,31 @@
+@if(releases.length){
+  <header class="view__toggle">
+    <mat-button-toggle-group [(ngModel)]="column" (click)="onOrderChange(column)">
+      <mat-button-toggle value="NAME">Name</mat-button-toggle>
+      <mat-button-toggle value="DATE">Date</mat-button-toggle>
+      <!-- <mat-button-toggle value="PLAYS">Playcount</mat-button-toggle> -->
+    </mat-button-toggle-group>
+    <mat-form-field class="form__field release__query">
+      <mat-label></mat-label>
+      <input matInput [(ngModel)]="query">
+    </mat-form-field>
+    <mat-button-toggle-group [(ngModel)]="view">
+      <mat-button-toggle value="FORM">Form</mat-button-toggle>
+      <mat-button-toggle value="MATCH">Match</mat-button-toggle>
+    </mat-button-toggle-group>
+  </header>
+  <main class="object__releases">
+    @for (release of releases; track release) {
+      @if(!release.parentRelease && releaseMatchQuery(release)){
+        <app-release-row [release]="release" [view]="view"></app-release-row>
+        @if(release._children){
+          @for(releaseChild of release._children; track releaseChild){
+            <app-release-row [release]="releaseChild" [view]="view" [isChild]="true"></app-release-row>
+          }
+        }
+      }
+    }
+  </main>
+} @else {
+  <div class="object__no-data">No Data</div>
+}

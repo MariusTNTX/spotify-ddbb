@@ -4,7 +4,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
-import { BandTopCity } from '../../../../interfaces';
+import { ArtistTopCity } from '../../../../interfaces';
 import { SpotifyObjectsService } from '../../../../services/spotify-objects.service';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -16,12 +16,12 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class TopCitiesTabContentComponent implements OnInit {
 
-  public topCities!: BandTopCity[];
+  public topCities!: ArtistTopCity[];
     
   constructor(private _spotifyService: SpotifyObjectsService) { }
 
   ngOnInit() {
-    this.topCities = this._spotifyService.bandTopCities;
+    this.topCities = this._spotifyService.artistTopCities;
   }
 
   onUpCity(i: number){
