@@ -1,0 +1,15 @@
+<header class="view__toggle">
+  <mat-button-toggle-group [(ngModel)]="column" (click)="newOrder.emit(column)">
+    <mat-button-toggle value="NAME">Name</mat-button-toggle>
+    <mat-button-toggle value="DATE">Date</mat-button-toggle>
+    <mat-button-toggle value="PLAYS">Playcount</mat-button-toggle>
+  </mat-button-toggle-group>
+  <mat-form-field class="form__field release__query">
+    <mat-label></mat-label>
+    <input matInput [(ngModel)]="query" (input)="newQuery.emit(query)">
+  </mat-form-field>
+  <mat-button-toggle-group [(ngModel)]="view" (click)="newView.emit(view)">
+    <mat-button-toggle value="FORM">Form</mat-button-toggle>
+    <mat-button-toggle value="MATCH">Match</mat-button-toggle>
+  </mat-button-toggle-group>
+</header>

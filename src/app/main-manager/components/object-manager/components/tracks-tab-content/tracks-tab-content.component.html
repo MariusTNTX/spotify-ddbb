@@ -1,3 +1,14 @@
-<p>
-  tracks-tab-content works!
-</p>
+@if(tracks.length){
+  <app-match-header [column]="column" [view]="view" 
+    (newOrder)="onOrderChange($event)" (newQuery)="query = $event" (newView)="view = $event">
+  </app-match-header>
+  <main class="object__tracks">
+    @for (track of tracks; track track) {
+      @if(!track.parentTrack && trackMatchQuery(track)){
+        <app-track-row [track]="track" [view]="view"></app-track-row>
+      }
+    }
+  </main>
+} @else {
+  <div class="object__no-data">No Data</div>
+}

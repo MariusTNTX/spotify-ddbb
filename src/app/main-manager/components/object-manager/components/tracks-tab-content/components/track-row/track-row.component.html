@@ -1,0 +1,69 @@
+<div class="tracks__track" [class]="{ 'tracks__track--indent': isChild || isMatch }">
+  @if(isChild){
+    <button mat-mini-fab class="track__unmatch" (click)="unmatch()">
+      <mat-icon>remove</mat-icon>
+    </button>
+    <button mat-mini-fab class="track__play-select" 
+      [disabled]="playsetIsDisabled"
+      [color]="playcountTrackIsEven ? 'primary' : 'warn'" 
+      (click)="setPlaycountTrack()">
+      @if(!track.playcountTrack) {
+        <mat-icon>circle</mat-icon>
+      } @else {
+        <mat-icon>radio_button_unchecked</mat-icon>
+      }
+    </button>
+  } @else if (isMatch) {
+    <button mat-mini-fab class="track__match" (click)="match()">
+      <mat-icon>add</mat-icon>
+    </button>
+  }
+  <div class="track__image">
+    <img [src]="track.release.coverArt" class="track__img">
+  </div>
+  @if(!view || view === 'FORM'){
+    <mat-form-field class="form__field track__name" [class]="{ 'track__name--indent2': isChild || isMatch }">
+      <mat-label>{{ track.release.name }}</mat-label>
+      <input matInput [(ngModel)]="track.name">
+    </mat-form-field>
+  } @else {
+    <mat-form-field class="form__field track__name" [class]="{ 'track__name--indent': isChild || isMatch }">
+      @if(isMatch){
+        <mat-label>{{ track.release.name }}</mat-label>
+      } @else {
+        <mat-label>{{ track.name }} || {{ track.release.name }}</mat-label>
+      }
+      <input matInput [(ngModel)]="query" [disabled]="isMatch">
+    </mat-form-field>
+  }
+  <mat-form-field class="form__field track__playcount">
+    <mat-label>Playcount</mat-label>
+    <input matInput [(ngModel)]="track.playcount">
+  </mat-form-field>
+  <mat-form-field class="form__field track__year">
+    <mat-label>Year</mat-label>
+    <input matInput [(ngModel)]="track.release.year">
+  </mat-form-field>
+  <mat-form-field class="form__field track__type">
+    <mat-label>Type</mat-label>
+    <mat-select [(ngModel)]="track.release.type">
+      @for (type of types; track type) {
+        <mat-option [value]="type">{{ type }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="form__field track__track-number">
+    <mat-label>Tracks</mat-label>
+    <input matInput [(ngModel)]="track.release.totalTracks">
+  </mat-form-field>
+</div>
+
+@if(!isChild && view === 'FORM' && track._children){
+  @for(trackChild of track._children; track trackChild){
+    <app-track-row [track]="trackChild" [view]="view" [isChild]="true"></app-track-row>
+  }
+} @else if (!isMatch && view === 'MATCH') {
+  @for(trackMatched of subQueryMatchTracks(query); track trackMatched){
+    <app-track-row [track]="trackMatched" [view]="view" [isMatch]="true" (matchedTrack)="onMatchedTrack($event)"></app-track-row>
+  }
+}

@@ -53,10 +53,11 @@ Releases
 - type: string(20) nullable=true default='ALBUM' check type='ALBUM'|'SINGLE'|'EP'|'COMPILATION'
 - coverArt: string(url) nullable=false
 - totalTracks: number(100) nullable=false
+- timeIndex: number(10) nullable=false default=0
 - year: number(3000) nullable=false
-- lastUpload: date nullable=false default=currentDate
 - month: number(12) nullable=true
 - day: number(31) nullable=true
+- lastUpload: date nullable=false default=currentDate
 - parentRelease: number(ID) nullable=true FK=Releases.Id
 - shareId: string(22) nullable=true
 - artist: number(ID) nullable=false FK=Artists.Id(Delete Cascade)

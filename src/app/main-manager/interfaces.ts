@@ -1,3 +1,5 @@
+import { ReleaseType } from "./types"
+
 export interface Country {
   code: string, 
   name?: string
@@ -52,34 +54,36 @@ export interface RelatedArtist {
 export interface Release {
   id: string,
   name: string,
-  type: 'ALBUM'|'SINGLE'|'EP'|'COMPILATION',
+  type: ReleaseType,
   coverArt: string,
   totalTracks: number,
   year: number,
   artist: Artist
   month?: number,
   day?: number,
+  timeIndex?: number,
   parentRelease?: Release,
   shareId?: string,
   lastUpload?: Date,
-  _children?: Release[],
-  _suggestions?: Release[],
+  tracks?: Track[],
+  _children?: Release[]
 }
 
 export interface Track {
   id: string,
-  release: Release,
   name: string,
+  release: Release,
   playcount: number,
   length: number,
+  isExplicit: boolean,
   trackNumber: number,
   discNumber?: number,
   playcountTrack?: Track,
   parentTrack?: Track,
   originalTrack?: Track,
   maxPlaycountTrack?: Track,
-  isExplicit: boolean,
   lastUpload?: Date,
+  _children?: Track[]
 
   artists?: Artist[]
 }

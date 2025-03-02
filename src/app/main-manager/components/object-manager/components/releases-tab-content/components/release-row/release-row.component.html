@@ -1,23 +1,31 @@
-<div class="releases__release" [class]="{ 'releases__release--child': isChild }">
+<div class="releases__release" [class]="{ 'releases__release--indent': isChild || isMatch }">
   @if(isChild){
     <button mat-mini-fab class="release__unmatch" (click)="unmatch()">
       <mat-icon>remove</mat-icon>
+    </button>
+  } @else if (isMatch) {
+    <button mat-mini-fab class="release__match" (click)="match()">
+      <mat-icon>add</mat-icon>
     </button>
   }
   <div class="release__image">
     <img [src]="release.coverArt" class="release__img">
   </div>
-  @if(view === 'FORM' || !view){
-    <mat-form-field class="form__field release__name" [class]="{ 'release__name--child': isChild }">
+  @if(!view || view === 'FORM'){
+    <mat-form-field class="form__field release__name" [class]="{ 'release__name--indent': isChild || isMatch }">
       <mat-label>Name</mat-label>
       <input matInput [(ngModel)]="release.name">
     </mat-form-field>
   } @else {
-    <mat-form-field class="form__field release__name" [class]="{ 'release__name--child': isChild }">
+    <mat-form-field class="form__field release__name" [class]="{ 'release__name--indent': isChild || isMatch }">
       <mat-label>{{ release.name }}</mat-label>
-      <input matInput [(ngModel)]="query">
+      <input matInput [(ngModel)]="query" [disabled]="isMatch">
     </mat-form-field>
   }
+  <mat-form-field class="form__field release__time-index">
+    <mat-label>Index</mat-label>
+    <input matInput type="number" [(ngModel)]="release.timeIndex" [style.color]="duplicatedDates ? 'red' : null">
+  </mat-form-field>
   <mat-form-field class="form__field release__day">
     <mat-label>Day</mat-label>
     <input matInput [(ngModel)]="release.day">
@@ -43,3 +51,13 @@
     <input matInput [(ngModel)]="release.totalTracks">
   </mat-form-field>
 </div>
+
+@if(!isChild && view === 'FORM' && release._children){
+  @for(releaseChild of release._children; track releaseChild){
+    <app-release-row [release]="releaseChild" [view]="view" [isChild]="true"></app-release-row>
+  }
+} @else if (!isMatch && view === 'MATCH') {
+  @for(releaseMatched of subQueryMatchReleases(query); track releaseMatched){
+    <app-release-row [release]="releaseMatched" [view]="view" [isMatch]="true" (matchedRelease)="onMatchedRelease($event)"></app-release-row>
+  }
+}

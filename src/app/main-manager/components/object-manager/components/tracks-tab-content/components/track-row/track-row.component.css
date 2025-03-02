@@ -1,50 +1,58 @@
-.releases__release, .releases__release--indent {
+.tracks__track, .tracks__track--indent {
   display: flex;
   flex-direction: row;
   align-items: center;
   margin-bottom: .5rem;
 }
 
-.releases__release--indent {
+.tracks__track--indent {
   margin-left: 2rem;
 }
 
-.releases__release--indent .release__image, .releases__release--indent .form__field{
+.tracks__track--indent .track__image, .tracks__track--indent .form__field{
   opacity: 0.6;
 }
 
-.release__image {
+.track__image {
   height: 56px;
   margin-top: 10px;
   border-radius: 1rem;
 }
 
-.release__img {
+.track__img {
   max-width: 56px;
   max-height: 56px;
   border-radius: .3rem;
 }
 
-.release__time-index, .release__day, .release__month, .release__year, .release__track-number {
+.track__year, .track__track-number {
   width: 70px;
 }
 
-.release__type {
+.track__playcount {
+  width: 156px;
+}
+
+.track__type {
   width: 180px;
 }
 
-.release__name {
+.track__name {
   width: 500px;
 }
 
-.release__name--indent {
+.track__name--indent {
   width: 428px;
+}
+
+.track__name--indent2 {
+  width: 388px;
 }
 
 .form__field {
   margin-bottom: -30px;
 }
 
-.form__field, .release__image {
+.form__field, .track__image {
   margin-left: 1rem;
 }
