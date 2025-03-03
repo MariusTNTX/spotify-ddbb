@@ -8,12 +8,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { Track } from '../../../../../../interfaces';
 import { SpotifyObjectsService } from '../../../../../../services/spotify-objects.service';
 import { ReleaseType, View } from '../../../../../../types';
+import { MatBadgeModule } from '@angular/material/badge';
 
 @Component({
   selector: 'app-track-row',
   templateUrl: './track-row.component.html',
   styleUrls: ['./track-row.component.css'],
-  imports: [FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule]
+  imports: [FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatBadgeModule]
 })
 export class TrackRowComponent implements OnInit {
 
@@ -53,12 +54,12 @@ export class TrackRowComponent implements OnInit {
     return playcountIndex! >= 0 ? !(playcountIndex! % 2) : false;
   }
 
-  get playsetIsDisabled(): boolean { //Show if plays differs from parent plays and there's another track with the same plays
+  get playsetIsDisabled(): boolean { // Show if plays differs from parent plays and there's another track with the same plays
     return  this.track.playcount === this.track.parentTrack?.playcount ||
             !this.track.parentTrack?._children?.some((t: Track) => t.playcount === this.track.playcount && t.id !== this.track.id);
   }
 
-  subQueryMatchTracks(query: string): Track[] { //Show Tracks by query (hide the same track and child tracks)
+  subQueryMatchTracks(query: string): Track[] { // Show Tracks by query (hide the same track and child tracks)
     if(query?.length === 0) return [];
     return this.tracks.filter((t: Track) => t.id !== this.track.id && !this.track._children?.includes(t) && t.name.toLowerCase().includes(query.toLowerCase()));
   }
@@ -76,9 +77,23 @@ export class TrackRowComponent implements OnInit {
           t.playcountTrack = i === 0 ? undefined : samePlaycountTracks[0];
         });
       }
-      //Remove parent-track and playcount-track from unmatched track
+      // If unmatched track was the max-playcount-track resets max-playcount-track
+      if(!this.track.maxPlaycountTrack && this.track.parentTrack?._children?.length){
+        this.setMaxPlaycountTrack([...this.track.parentTrack._children]);
+      } else if(!this.track.parentTrack!._children?.length) {
+        this.track.parentTrack!.maxPlaycountTrack = undefined;
+      }
+      // If unmatched track was the original-track resets original-track
+      if(!this.track.originalTrack && this.track.parentTrack?._children?.length){
+        this.setOriginalTrack([...this.track.parentTrack._children]);
+      } else if(!this.track.parentTrack!._children?.length) {
+        this.track.parentTrack!.originalTrack = undefined;
+      }
+      //Remove parent-track, playcount-track, max-playcount-track and original-Track from unmatched track
       this.track.parentTrack = undefined;
       this.track.playcountTrack = undefined;
+      this.track.maxPlaycountTrack = undefined;
+      this.track.originalTrack = undefined;
     } else throw Error('childTrackIndex was not found');
   }
 
@@ -87,19 +102,19 @@ export class TrackRowComponent implements OnInit {
   }
 
   onMatchedTrack(trackMatch: Track){
-    //Add Child-Track to Upper-Track children
+    // Add Child-Track to Upper-Track Children
     if(!this.track._children){ 
       this.track._children = [trackMatch];
     } else this.track._children.push(trackMatch);
 
-    //Sort Upper-Track Children
+    // Sort Upper-Track Children
     this.track._children.sort((a,b) =>
       b.playcount - a.playcount || 
       a.name.localeCompare(b.name) || 
       a.release.year - b.release.year
     );
 
-    //Set Child-Track's playcount Track
+    // Set Child-Track's playcount Track
     if(trackMatch.playcount === this.track.playcount){
       trackMatch.playcountTrack = this.track;
     } else {
@@ -112,15 +127,36 @@ export class TrackRowComponent implements OnInit {
       }
     }
 
-    //Set Child-Track's parent Track
+    // Set Track's Max-Playcount-Track
+    this.setMaxPlaycountTrack([this.track, ...this.track._children]);
+
+    // Set Track's Original-Track
+    this.setOriginalTrack([this.track, ...this.track._children]);
+
+    // Set Child-Track's Parent-Track
     trackMatch.parentTrack = this.track;
   }
 
   setPlaycountTrack(){
-    if(!this.track.playcountTrack) return; //Track remains as playcount track (with the same role)
+    if(!this.track.playcountTrack) return; // Track remains as playcount track (with the same role)
     // If track is playcount child
     let playcountTracks = this.track.parentTrack?._children?.filter((t: Track) => t.playcount === this.track.playcount);
     playcountTracks?.forEach((t: Track) => t.playcountTrack = this.track);
     this.track.playcountTrack = undefined;
+    this.track.parentTrack?._children && this.setMaxPlaycountTrack([this.track.parentTrack, ...this.track.parentTrack._children]);
+  }
+
+  setOriginalTrack(list: Track[]){
+    let originalTrack = list.sort((a, b) => {
+      let aDate = new Date(a.release.year ?? 0, (a.release.month ?? 1) - 1, a.release.day ?? 1).getTime() + (a.release.timeIndex ?? 0);
+      let bDate = new Date(b.release.year ?? 0, (b.release.month ?? 1) - 1, b.release.day ?? 1).getTime() + (b.release.timeIndex ?? 0);
+      return aDate - bDate;
+    })[0];
+    list.forEach((t: Track) => t.originalTrack = t.id !== originalTrack.id ? originalTrack : undefined);
+  }
+
+  setMaxPlaycountTrack(list: Track[]){
+    let maxPlaycountTrack = list.filter((t: Track) => !t.playcountTrack).sort((a, b) => b.playcount - a.playcount)[0];
+    list.forEach((t: Track) => t.maxPlaycountTrack = t.id !== maxPlaycountTrack.id ? maxPlaycountTrack : undefined);
   }
 }

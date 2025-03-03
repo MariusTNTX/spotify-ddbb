@@ -1,9 +1,12 @@
 <header class="layout__header">
   <div class="header__file-selector">
-    <button mat-flat-button class="header__har-button" (click)="openFileInput()">Select HAR File</button>
+    <button mat-raised-button color="primary" class="header__har-button" (click)="openFileInput()">Select HAR File</button>
     <input type="file" #fileInput accept="HAR" multiple="false" (change)="onFileSelected($event)" hidden>
   </div>
   <div class="header__file-title">
     <h1 class="header__title">{{ fileName }}</h1>
+  </div>
+  <div class="header__ddbb">
+    <button mat-raised-button color="primary" class="header__clipboard-button" (click)="copyToClipboard()">Copy to Clipboard</button>
   </div>
 </header>

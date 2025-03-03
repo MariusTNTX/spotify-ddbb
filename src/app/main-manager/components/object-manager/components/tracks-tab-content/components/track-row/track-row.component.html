@@ -18,7 +18,7 @@
       <mat-icon>add</mat-icon>
     </button>
   }
-  <div class="track__image">
+  <div class="track__image" matBadge="·" matBadgeColor="accent" matBadgeSize="small" [matBadgeHidden]="view === 'MATCH' || track.originalTrack">
     <img [src]="track.release.coverArt" class="track__img">
   </div>
   @if(!view || view === 'FORM'){
@@ -36,7 +36,7 @@
       <input matInput [(ngModel)]="query" [disabled]="isMatch">
     </mat-form-field>
   }
-  <mat-form-field class="form__field track__playcount">
+  <mat-form-field class="form__field track__playcount" matBadge="·" matBadgeSize="small" [matBadgeHidden]="view === 'MATCH' || track.maxPlaycountTrack">
     <mat-label>Playcount</mat-label>
     <input matInput [(ngModel)]="track.playcount">
   </mat-form-field>
