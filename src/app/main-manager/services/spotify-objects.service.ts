@@ -20,7 +20,7 @@ export class SpotifyObjectsService {
   };
 
   constructor() { 
-    const NIGHTWISH: Artist = {
+    /* const NIGHTWISH: Artist = {
       followers: 2325822,
       hasFullProfile: true,
       id: '2NPduAUeLVsfIauhRwuft1',
@@ -141,35 +141,35 @@ export class SpotifyObjectsService {
     this.DATA.releases.push(ONCE, AMARANTH_EP, DARK_PASSION_PLAY, AMARANTH_SINGLE, ENDLESS_FORMS, ENDLESS_FORMS_DELUXE);
 
     const NEMO: Track = { id: '1tVEWlyn2nsAke3Lp7HoZ0', name: 'Nemo', release: ONCE, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 7687898768, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 7687898768, trackNumber: 12, discNumber: 1 };
     const SIREN: Track = { id: 'DF8G7DF8G7DF89G6DF88', name: 'Siren', release: ONCE, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 2464690976, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 2464690976, trackNumber: 12, discNumber: 1 };
     const AMARANTH_LIVE: Track = { id: 'fgfdh9g08976sd65fg', name: 'Amaranth - Live in Tampa', release: AMARANTH_EP, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 5678, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 5678, trackNumber: 12, discNumber: 1 };
     const AMARANTH_1: Track = { id: '9H8JGH65GH78JHG9HGJ', name: 'Amaranth', release: AMARANTH_EP, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 4657436754, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 4657436754, trackNumber: 12, discNumber: 1 };
     const AMARANTH_2: Track = { id: 'SA5D34SAD6D7F8F98DG', name: 'Amaranth', release: DARK_PASSION_PLAY, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 4657436754, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 4657436754, trackNumber: 12, discNumber: 1 };
     const EVA: Track = { id: 'T5R60EER0RT97TR87TTRY', name: 'Eva', release: DARK_PASSION_PLAY, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 67765656, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 67765656, trackNumber: 12, discNumber: 1 };
     const AMARANTH_EDIT: Track = { id: 'VBV090989F7D8G6F5HJ', name: 'Amaranth - Radio Edit', release: AMARANTH_SINGLE, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 342343, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 342343, trackNumber: 12, discNumber: 1 };
     const AMARANTH_EDIT2: Track = { id: 'gf9g9hh9f8f7d6dd5', name: 'Amaranth - Radio Edit 2', release: AMARANTH_SINGLE, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 342343, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 342343, trackNumber: 12, discNumber: 1 };
     const AMARANTH_EDIT3: Track = { id: 'hjh9j89f878d76sa65d54', name: 'Amaranth - Radio Edit 3', release: AMARANTH_SINGLE, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 342343, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 342343, trackNumber: 12, discNumber: 1 };
     const AMARANTH_REMASTER: Track = { id: 'VBV090989F7D8G6F5HJ', name: 'Amaranth - Remaster 2012', release: AMARANTH_SINGLE, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 4657833, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 4657833, trackNumber: 12, discNumber: 1 };
     const AMARANTH_REMASTER2: Track = { id: 'fdgfd8ghf9h8gf7643', name: 'Amaranth - Remaster 2019', release: AMARANTH_SINGLE, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 4657833, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 4657833, trackNumber: 12, discNumber: 1 };
     const ELAN: Track = { id: 'FGFDG88786767DSFD', name: 'Elan', release: ENDLESS_FORMS, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 8789909, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 8789909, trackNumber: 12, discNumber: 1 };
     const ALPENGLOW: Track = { id: 'SDFSD65565DSFSD43SDF', name: 'Alpenglow', release: ENDLESS_FORMS, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 2807546, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 2807546, trackNumber: 12, discNumber: 1 };
     const ELAN_DELUXE: Track = { id: '3423M4M234M23KLN32JL4', name: 'Elan', release: ENDLESS_FORMS_DELUXE, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 8789909, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 8789909, trackNumber: 12, discNumber: 1 };
     const ALPENGLOW_DELUXE: Track = { id: 'ZXCXZ4CXZ34CZX345C356FG', name: 'Alpenglow', release: ENDLESS_FORMS_DELUXE, artists: [NIGHTWISH], 
-      isExplicit: false, length: 854758449, playcount: 2807546, trackNumber: 12, discNumber: 1 };
+      length: 854758449, playcount: 2807546, trackNumber: 12, discNumber: 1 };
       
     ONCE.tracks = [NEMO, SIREN];
     AMARANTH_EP.tracks = [AMARANTH_1, AMARANTH_LIVE];
@@ -181,19 +181,7 @@ export class SpotifyObjectsService {
     this.DATA.tracks.push(
       NEMO, SIREN, AMARANTH_1, AMARANTH_LIVE, AMARANTH_2, EVA, AMARANTH_EDIT, AMARANTH_EDIT2, 
       AMARANTH_EDIT3, AMARANTH_REMASTER, AMARANTH_REMASTER2, ELAN, ALPENGLOW, ELAN_DELUXE, 
-      ALPENGLOW_DELUXE);
-
-    /* AMARANTH_2._children = [AMARANTH_1];
-    AMARANTH_1.playcountTrack = AMARANTH_2;
-    AMARANTH_1.parentTrack = AMARANTH_2;
-
-    ELAN._children = [ELAN_DELUXE];
-    ELAN_DELUXE.playcountTrack = ELAN;
-    ELAN_DELUXE.parentTrack = ELAN;
-
-    ALPENGLOW._children = [ALPENGLOW_DELUXE];
-    ALPENGLOW_DELUXE.playcountTrack = ALPENGLOW;
-    ALPENGLOW_DELUXE.parentTrack = ALPENGLOW; */
+      ALPENGLOW_DELUXE); */
   }
 
   get DATA(): SpotifyObjects {
@@ -238,10 +226,6 @@ export class SpotifyObjectsService {
 
   get trackArtists(): TrackArtist[] {
     return this._DATA.trackArtists;
-  }
-
-  convertRgbToHex(r: number, g: number, b: number): string {
-    return `${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`;
   }
 
 }

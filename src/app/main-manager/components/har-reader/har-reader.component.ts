@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { HarReaderService } from '../../services/har-reader.service';
 
 @Component({
   selector: 'app-har-reader',
@@ -16,7 +17,7 @@ export class HarReaderComponent implements OnInit {
   
   public fileName!: string;
 
-  constructor() { }
+  constructor(private _harService: HarReaderService) { }
 
   ngOnInit() { }
 
@@ -26,13 +27,30 @@ export class HarReaderComponent implements OnInit {
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.fileName = file.name;
+    if(!input.files || !input.files.length) {
+      alert('No File Selected');
+      return;
     }
+    const file = input.files[0];
+    if (file.name.split('.').pop()!.toLowerCase() !== 'har') {
+      alert('No HAR File Selected');
+      return;
+    }
+    this.fileName = file.name;
+    const reader = new FileReader();
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      try {
+        const json: any = JSON.parse(e.target!.result as string);
+        this._harService.setFullBandInfo(json);
+      } catch (error) {
+        alert('HAR Reading Error');
+        throw error;
+      }
+    };
+    reader.readAsText(file);
   }
 
   copyToClipboard(): void {
-
+    
   }
 }

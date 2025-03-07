@@ -75,7 +75,6 @@ Tracks
 - parentTrack: number(ID) nullable=true FK=Tracks.Id
 - originalTrack: number(ID) nullable=true FK=Tracks.Id
 - maxPlaycountTrack: number(ID) nullable=true FK=Tracks.Id
-- isExplicit: boolean default=false
 
 TrackArtists
 - id: autoincrement PK

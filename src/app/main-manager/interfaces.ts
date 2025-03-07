@@ -14,7 +14,7 @@ export interface City {
 export interface Artist {
   id: string,
   name: string,
-  avatarImage: string,
+  avatarImage?: string,
   monthlyListeners?: number,
   followers?: number,
   shareId?: string,
@@ -28,10 +28,10 @@ export interface Artist {
 }
 
 export interface ArtistTopCity {
-  artist: Artist,
   city: City,
   listeners: number,
   index: number
+  artist?: Artist,
 }
 
 export interface ArtistExternalLink {
@@ -75,7 +75,6 @@ export interface Track {
   release: Release,
   playcount: number,
   length: number,
-  isExplicit: boolean,
   trackNumber: number,
   discNumber?: number,
   playcountTrack?: Track,
@@ -84,7 +83,6 @@ export interface Track {
   maxPlaycountTrack?: Track,
   lastUpload?: Date,
   _children?: Track[]
-
   artists?: Artist[]
 }
 
