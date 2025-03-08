@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { Artist } from '../../../../interfaces';
@@ -14,8 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './artist-tab-content.component.html',
   styleUrls: ['./artist-tab-content.component.css'],
   imports: [FormsModule, MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, 
-            MatCheckboxModule, MatIconModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+            MatCheckboxModule, MatIconModule]
 })
 export class ArtistTabContentComponent implements OnInit {
 

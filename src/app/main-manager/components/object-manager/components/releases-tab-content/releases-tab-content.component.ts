@@ -54,13 +54,13 @@ import { View, Column } from '../../../../types';
   }
 
   sortReleasesByName(isAscendent: boolean): void {
-    this.releases = [...this.releases].sort((a, b) => 
+    this.releases.sort((a, b) => 
       isAscendent ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
     );
   }
 
   sortReleasesByDate(isAscendent: boolean): void {
-    this.releases = [...this.releases].sort((a, b) => {
+    this.releases.sort((a, b) => {
       let aDate = new Date(a.year ?? 0, (a.month ?? 1) - 1, a.day ?? 1).getTime();
       let bDate = new Date(b.year ?? 0, (b.month ?? 1) - 1, b.day ?? 1).getTime();
       if(aDate === bDate) return isAscendent ? a.timeIndex! - b.timeIndex! : b.timeIndex! - a.timeIndex!;
@@ -69,7 +69,7 @@ import { View, Column } from '../../../../types';
   }
 
   sortReleasesByPlaycount(isAscendent: boolean): void {
-    this.releases = [...this.releases].sort((a, b) => {
+    this.releases.sort((a, b) => {
       let aPlays = a.tracks?.reduce((plays: number, track: Track) => plays += track.playcount, 0) ?? 0;
       let bPlays = b.tracks?.reduce((plays: number, track: Track) => plays += track.playcount, 0) ?? 0;
       return isAscendent ? aPlays - bPlays : bPlays - aPlays;

@@ -54,6 +54,7 @@ export interface RelatedArtist {
 export interface Release {
   id: string,
   name: string,
+  normalicedName: string,
   type: ReleaseType,
   coverArt: string,
   totalTracks: number,
@@ -72,6 +73,7 @@ export interface Release {
 export interface Track {
   id: string,
   name: string,
+  normalicedName: string,
   release: Release,
   playcount: number,
   length: number,

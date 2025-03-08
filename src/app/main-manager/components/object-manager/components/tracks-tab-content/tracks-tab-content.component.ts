@@ -54,13 +54,13 @@ export class TracksTabContentComponent implements OnInit {
   }
 
   sortTracksByName(isAscendent: boolean): void {
-    this.tracks = [...this.tracks].sort((a, b) => 
+    this.tracks.sort((a, b) => 
       isAscendent ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
     );
   }
 
   sortTracksByDate(isAscendent: boolean): void {
-    this.tracks = [...this.tracks].sort((a, b) => {
+    this.tracks.sort((a, b) => {
       let aDate = new Date(a.release.year ?? 0, (a.release.month ?? 1) - 1, a.release.day ?? 1).getTime();
       let bDate = new Date(b.release.year ?? 0, (b.release.month ?? 1) - 1, b.release.day ?? 1).getTime();
       return isAscendent ? aDate - bDate : bDate - aDate;
@@ -68,7 +68,7 @@ export class TracksTabContentComponent implements OnInit {
   }
 
   sortTracksByPlaycount(isAscendent: boolean): void {
-    this.tracks = [...this.tracks].sort((a, b) => 
+    this.tracks.sort((a, b) => 
       isAscendent ? a.playcount - b.playcount : b.playcount - a.playcount
     );
   }

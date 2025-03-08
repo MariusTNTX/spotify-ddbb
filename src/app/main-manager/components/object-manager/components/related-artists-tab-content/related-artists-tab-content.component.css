@@ -14,6 +14,7 @@
   height: 56px;
   margin-top: 10px;
   border-radius: 1rem;
+  min-width: 56px;
 }
 
 .artist__img {

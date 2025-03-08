@@ -24,7 +24,7 @@
   }
   <mat-form-field class="form__field release__time-index">
     <mat-label>Index</mat-label>
-    <input matInput type="number" [(ngModel)]="release.timeIndex" [style.color]="duplicatedDates ? 'red' : null">
+    <input matInput type="number" [(ngModel)]="release.timeIndex" [style.color]="duplicatedDates ? 'red' : null" (input)="updateTrackOrder()">
   </mat-form-field>
   <mat-form-field class="form__field release__day">
     <mat-label>Day</mat-label>

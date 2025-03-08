@@ -1,20 +1,29 @@
 import { Injectable } from '@angular/core';
 import { SpotifyObjectsService } from './spotify-objects.service';
-import { Artist, Release } from '../interfaces';
+import { Artist, Release, Track } from '../interfaces';
+import { ReleaseType } from '../types';
+import { ReleaseService } from './release.service';
+import { TrackService } from './track.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HarReaderService {
 
-  constructor(private _spotifyService: SpotifyObjectsService) { }
+  constructor(
+    private _spotifyService: SpotifyObjectsService,
+    private _releaseService: ReleaseService,
+    private _trackService: TrackService,
+  ) { }
 
   public setFullBandInfo(json: any){
+
     /* FULL PROFILE */
     const artistOverview = this.getArtistOverview(json);
     this.setMainArtist(artistOverview);
     this.setTopCities(artistOverview);
     this.setExternalLinks(artistOverview);
+    this.setArtistGallery(artistOverview);
 
     /* RELATED ARTISTS */
     this.setRelatedArtists(json);
@@ -25,16 +34,13 @@ export class HarReaderService {
     /* FULL TRACKS */
     this.setFullTracks(json);
     
-    /* TOP TRACKS */
-    /* this.groupTracks(); */
+    /* RELEASE DEPURATION */
+    this._releaseService.depurateReleases();
+    
+    /* TRACK DEPURATION */
+    this._trackService.depurateTracks();
 
     console.log(this._spotifyService.DATA);
-    
-
-    /* console.clear();
-    console.log('TOP TRACKS: ', topTracks);
-    console.log('FULL TRACKS: ', albumTracksEntries);
-    console.log('FULL RELEASES: ', artistDiscographyAllEntries); */
   }
 
   private getArtistOverview(json: any){
@@ -50,11 +56,11 @@ export class HarReaderService {
     this._spotifyService.artists.push({
       id: artistOverview.id,
       name: artistOverview.profile.name,
-      avatarImage: artistOverview.visuals.avatarImage.sources[0].url ?? '',
+      avatarImage: artistOverview.visuals.avatarImage.sources.reduce((acc: any, item: any) => acc && acc.width > item.width ? acc : item, null)?.url ?? '',
       monthlyListeners: artistOverview.stats.monthlyListeners,
       followers: artistOverview.stats.followers,
-      shareId: artistOverview.sharingInf.shareId,
-      headerImage: artistOverview.headerImage.data.sources.reduce((acc: any, item: any) => acc && acc.maxWidth > item.maxWidth ? acc : item, null),
+      shareId: artistOverview.sharingInfo.shareId,
+      headerImage: artistOverview.headerImage.data.sources.reduce((acc: any, item: any) => acc && acc.maxWidth > item.maxWidth ? acc : item, null)?.url ?? '',
       description: artistOverview.profile.biography.text ?? '',
       backBaseColor: this.convertRgbToHex(artistOverview.visualIdentity.wideFullBleedImage.extractedColorSet.highContrast.backgroundBase),
       hasFullProfile: true,
@@ -94,46 +100,31 @@ export class HarReaderService {
     );
   }
 
-  private setArtistGallery(artistOverview: any){ /* TODO */
-    /* this._spotifyService.artistExternalLinks.slice(0, this._spotifyService.artistExternalLinks.length);
-    this._spotifyService.artistExternalLinks.push(...artistOverview.profile.externalLinks.items
-      .map((link: any) => ({
+  private setArtistGallery(artistOverview: any){
+    this._spotifyService.artistImages.slice(0, this._spotifyService.artistImages.length);
+    this._spotifyService.artistImages.push(...artistOverview.visuals.gallery.items
+      .map((item: any) => ({
         artist: this._spotifyService.artists[0],
-        name: link.name,
-        url: link.url
+        image: item.sources.reduce((acc: any, item: any) => acc && acc.width > item.width ? acc : item, null)?.url ?? '',
       }))
-    ); */
+    );
   }
 
   private setRelatedArtists(json: any){
-    this._spotifyService.artists.push(...json.log.entries
+    this._spotifyService.relatedArtists.slice(0, this._spotifyService.relatedArtists.length);
+    this._spotifyService.relatedArtists.push(...json.log.entries
       .filter((entry: any) => entry.request.url.includes('queryArtistRelated') && entry.response.content.text)
       .map((entry: any) => JSON.parse(entry.response.content.text))
-      /* .reduce((releases: any[], group: any) => {
-        releases.push(...group.data.artistUnion.discography.all.items);
-        return releases;
-      }, [])
-      .reduce((releases: any[], release: any) => {
-        releases.push(...release.releases.items);
-        return releases;
-      }, [])
-      .map((release: any) => ({
-        id: release.id,
-        name: release.name,
-        type: release.type,
-        coverArt: release.coverArt.sources[release.coverArt.sources.length-1].url ?? '',
-        totalTracks: release.tracks.totalCount,
-        year: release.date.year,
-        month: release.date.precision === 'DAY' ? new Date(release.date.isoString).getMonth()+1 : undefined,
-        day: release.date.precision === 'DAY' ? new Date(release.date.isoString).getDate() : undefined,
-        artist: 'TODO GetArtistFullInfo()',
-        timeIndex: 1,
-        shareId: release.sharingInfo.shareId ?? undefined,
-        lastUpload: new Date(),
-        tracks: [],
-        _children: [],
-        parentRelease: undefined,
-      })) */
+      .map((content: any) => content.data.artistUnion.relatedContent.relatedArtists.items)[0]
+      .map((artist: any, index: number) => {
+        let targetArtist = {
+          id: artist.id,
+          name: artist.profile.name,
+          avatarImage: artist.visuals.avatarImage.sources.reduce((acc: any, item: any) => acc && acc.width > item.width ? acc : item, null)?.url ?? '',
+        };
+        this._spotifyService.artists.push(targetArtist);
+        return { originArtist: this._spotifyService.artists[0], targetArtist, index };
+      })
     );
   }
 
@@ -153,20 +144,27 @@ export class HarReaderService {
       .map((release: any) => ({
         id: release.id,
         name: release.name,
+        normalicedName: this._releaseService.normalizeRelease(release.name),
         type: release.type,
-        coverArt: release.coverArt.sources[release.coverArt.sources.length-1].url ?? '',
+        coverArt: release.coverArt.sources.reduce((acc: any, item: any) => acc && acc.width > item.width ? acc : item, null)?.url ?? '',
         totalTracks: release.tracks.totalCount,
         year: release.date.year,
-        month: release.date.precision === 'DAY' ? new Date(release.date.isoString).getMonth()+1 : undefined,
-        day: release.date.precision === 'DAY' ? new Date(release.date.isoString).getDate() : undefined,
-        artist: 'TODO GetArtistFullInfo()',
+        month: release.date.precision === 'DAY' ? new Date(release.date.isoString).getMonth()+1 : 1,
+        day: release.date.precision === 'DAY' ? new Date(release.date.isoString).getDate() : 1,
+        artist: this._spotifyService.artists[0],
         timeIndex: 1,
         shareId: release.sharingInfo.shareId ?? undefined,
         lastUpload: new Date(),
         tracks: [],
-        _children: [],
         parentRelease: undefined,
       }))
+      .map((release: Release) => {
+        if(release.month === 1 && release.day === 1){
+          release.month = 0;
+          release.day = 0;
+        }
+        return release;
+      })
     );
   }
 
@@ -185,6 +183,7 @@ export class HarReaderService {
       .map((track: any) => ({
         id: track.uri.replace('spotify:track:',''),
         name: track.name,
+        normalicedName: this._trackService.normalizeTrack(track.name),
         release: this._spotifyService.releases.find(release => release.id === track.release) ?? undefined,
         playcount: parseInt(track.playcount),
         length: track.duration.totalMilliseconds,
@@ -195,47 +194,21 @@ export class HarReaderService {
         originalTrack: undefined,
         maxPlaycountTrack: undefined,
         lastUpload: new Date(),
-        artists: track.artists.items.map((artist: any) => ({ 
-          id: artist.uri.replace('spotify:artist:', ''), 
-          name: artist.profile.name 
-        })),
-        _children: [],
+        artists: track.artists.items.map((artist: any) => {
+          let id = artist.uri.replace('spotify:artist:', '');
+          let foundArtist = this._spotifyService.artists.find((a: Artist) => a.id === id);
+          return foundArtist || { id, name: artist.profile.name };
+        }),
       }))
-      .map((track: any) => {
-        // TODO Reemplazar ID de artistas por objeto de artista conocido
-        !track.release.tracks.some((t: any) => t.uri === track.uri) && track.release.tracks.push(track);
+      .map((track: Track) => {
+        track.artists?.map((artist: Artist) => this._spotifyService.trackArtists.push({ track, artist }));
+        !track.release.tracks?.some((t: Track) => t.id === track.id) && track.release.tracks?.push(track);
         return track;
       })
     );
   }
 
-  /* private groupTracks(){
-    topTracks = albumTracksEntries
-      .sort((a, b) => parseInt(b.playcount)-parseInt(a.playcount))
-      .reduce((groups, track) => {
-        if(groups[groups.length-1] && groups[groups.length-1].some(t => {
-          return t.playcount === track.playcount && realNameOf(t.name).includes(realNameOf(track.name)) || realNameOf(track.name).includes(realNameOf(t.name))
-        })){
-          groups[groups.length-1].push(track);
-        } else groups.push([track]);
-        return groups;
-      }, [])
-      .map(trackGroup => {
-        if(trackGroup.some(t => t.release.type === 'ALBUM')){
-          trackGroup = trackGroup.filter(t => t.release.type === 'ALBUM');
-        }
-        return trackGroup.reduce((res, t) => {
-          if(!res.name || t.name.length < res.name.length || 
-            (t.name.length === res.name.length && t.release.date.year < res.release.date.year)){
-            return t;
-          }
-          return res;
-        }, {});
-      })
-  } */
-
   private convertRgbToHex(base: { alpha: number, blue: number, green: number, red: number }): string {
     return `${((1 << 24) | (base.red << 16) | (base.green << 8) | base.blue).toString(16).slice(1).toUpperCase()}`;
   }
-
 }

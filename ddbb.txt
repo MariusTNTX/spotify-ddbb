@@ -50,7 +50,7 @@ RelatedArtists
 Releases
 - id: string(22) PK
 - name: string(255) nullable=false
-- type: string(20) nullable=true default='ALBUM' check type='ALBUM'|'SINGLE'|'EP'|'COMPILATION'
+- type: string(20) nullable=true default='ALBUM' check type='ALBUM'|'SINGLE'|'EP'|'COMPILATION'|'LIVE'
 - coverArt: string(url) nullable=false
 - totalTracks: number(100) nullable=false
 - timeIndex: number(10) nullable=false default=0

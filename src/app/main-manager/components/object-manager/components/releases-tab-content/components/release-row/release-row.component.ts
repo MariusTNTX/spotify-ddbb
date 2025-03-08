@@ -3,11 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { Release, Artist } from '../../../../../../interfaces';
+import { Release, Artist, Track } from '../../../../../../interfaces';
 import { SpotifyObjectsService } from '../../../../../../services/spotify-objects.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ReleaseType, View } from '../../../../../../types';
+import { ReleaseService } from '../../../../../../services/release.service';
+import { TrackService } from '../../../../../../services/track.service';
 
 @Component({
   selector: 'app-release-row',
@@ -35,50 +37,46 @@ export class ReleaseRowComponent implements OnInit {
 
   public query!: string;
   public artists!: Artist[];
-  public types: ReleaseType[] = ['ALBUM', 'SINGLE', 'EP', 'COMPILATION'];
+  public types: ReleaseType[] = ['ALBUM', 'SINGLE', 'EP', 'COMPILATION', 'LIVE'];
   public releases!: Release[];
       
-  constructor(private _spotifyService: SpotifyObjectsService) { }
+  constructor(
+    private _spotifyService: SpotifyObjectsService,
+    private _releaseService: ReleaseService,
+    private _trackService: TrackService,
+  ) { }
 
   ngOnInit() {
     this.artists = this._spotifyService.artists;
     this.releases = this._spotifyService.releases;
-    this.releases.forEach((r: Release) => r.timeIndex = 1);
     this.query = this.release.name;
   }
 
   get duplicatedDates(): boolean {
-    let currentReleaseDate = new Date(
-      this.release.year ?? 0, 
-      (this.release.month ?? 1) - 1, 
-      this.release.day ?? 1
-    ).getTime() + (this.release.timeIndex ?? 0);
-
-    return this.releases.some((r: Release) => {
-      let rDate = new Date(r.year ?? 0, (r.month ?? 1) - 1, r.day ?? 1).getTime() + (r.timeIndex ?? 0);
-      return r.id !== this.release.id && currentReleaseDate === rDate;
-    });
+    return this._releaseService.hasDuplicates(this.release);
   }
   
   subQueryMatchReleases(query: string): Release[] {
-    if(query?.length === 0) return [];
-    return this.releases.filter((r: Release) => !r.parentRelease && !r._children && r.id !== this.release.id && r.name.toLowerCase().includes(query.toLowerCase()));
+    return this._releaseService.filterFromRelease(this.release, query);
   }
 
   unmatch(){
-    let childReleaseIndex: number | undefined = this.release.parentRelease?._children?.findIndex((r: Release) => r === this.release);
-    if(childReleaseIndex !== undefined && childReleaseIndex >= 0){
-      this.release.parentRelease!._children!.splice(childReleaseIndex,1);
-      this.release.parentRelease = undefined;
-    } else throw Error('childReleaseIndex was not found');
+    this._releaseService.unmatch(this.release);
   }
 
   match(){
     this.matchedRelease.emit(this.release);
   }
 
-  onMatchedRelease(releaseMatch: Release){
-    this.release._children?.push(releaseMatch);
-    releaseMatch.parentRelease = this.release;
+  onMatchedRelease(childRelease: Release){
+    this._releaseService.match(this.release, childRelease);
+  }
+
+  updateTrackOrder(){
+    this.release.tracks?.map((track: Track) => {
+      let parentTrack = track.parentTrack || track;
+      let trackChildren = track.parentTrack ? track.parentTrack._children ?? [] : track._children ?? [];
+      this._trackService.setOriginalTrack([ parentTrack, ...trackChildren ]);
+    });
   }
 }

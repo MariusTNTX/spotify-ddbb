@@ -1,4 +1,4 @@
-export type ReleaseType = 'ALBUM' | 'SINGLE' | 'EP' | 'COMPILATION';
+export type ReleaseType = 'ALBUM' | 'SINGLE' | 'EP' | 'COMPILATION' | 'LIVE';
 
 export type Column = 'NAME' | 'DATE' | 'PLAYS';
 

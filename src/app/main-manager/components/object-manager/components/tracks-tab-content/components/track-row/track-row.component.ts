@@ -9,6 +9,7 @@ import { Track } from '../../../../../../interfaces';
 import { SpotifyObjectsService } from '../../../../../../services/spotify-objects.service';
 import { ReleaseType, View } from '../../../../../../types';
 import { MatBadgeModule } from '@angular/material/badge';
+import { TrackService } from '../../../../../../services/track.service';
 
 @Component({
   selector: 'app-track-row',
@@ -35,10 +36,13 @@ export class TrackRowComponent implements OnInit {
   @Output() matchedTrack = new EventEmitter<Track>()
 
   public query!: string;
-  public types: ReleaseType[] = ['ALBUM', 'SINGLE', 'EP', 'COMPILATION'];
+  public types: ReleaseType[] = ['ALBUM', 'SINGLE', 'EP', 'COMPILATION', 'LIVE'];
   public tracks!: Track[];
       
-  constructor(private _spotifyService: SpotifyObjectsService) { }
+  constructor(
+    private _spotifyService: SpotifyObjectsService,
+    private _trackService: TrackService,
+  ) { }
 
   ngOnInit() {
     this.tracks = this._spotifyService.tracks;
@@ -60,103 +64,22 @@ export class TrackRowComponent implements OnInit {
   }
 
   subQueryMatchTracks(query: string): Track[] { // Show Tracks by query (hide the same track and child tracks)
-    if(query?.length === 0) return [];
-    return this.tracks.filter((t: Track) => t.id !== this.track.id && !this.track._children?.includes(t) && t.name.toLowerCase().includes(query.toLowerCase()));
+    return this._trackService.filterFromTrack(this.track, query);
   }
 
   unmatch(){
-    let childTrackIndex: number | undefined = this.track.parentTrack?._children?.findIndex((r: Track) => r === this.track);
-    if(childTrackIndex !== undefined && childTrackIndex >= 0){
-      // Remove track from parent-children and remove track's parent-track
-      this.track.parentTrack!._children!.splice(childTrackIndex,1);
-      // If unmatched track was playcount-track and there's child tracks left
-      if(this.track.playcountTrack === undefined && this.track.parentTrack?._children?.length){
-        const samePlaycountTracks = this.track.parentTrack!._children!.filter((t: Track) => t.playcount === this.track.playcount);
-        // Re-assign playcount-track
-        samePlaycountTracks.length > 0 && samePlaycountTracks.forEach((t: Track, i: number) => {
-          t.playcountTrack = i === 0 ? undefined : samePlaycountTracks[0];
-        });
-      }
-      // If unmatched track was the max-playcount-track resets max-playcount-track
-      if(!this.track.maxPlaycountTrack && this.track.parentTrack?._children?.length){
-        this.setMaxPlaycountTrack([...this.track.parentTrack._children]);
-      } else if(!this.track.parentTrack!._children?.length) {
-        this.track.parentTrack!.maxPlaycountTrack = undefined;
-      }
-      // If unmatched track was the original-track resets original-track
-      if(!this.track.originalTrack && this.track.parentTrack?._children?.length){
-        this.setOriginalTrack([...this.track.parentTrack._children]);
-      } else if(!this.track.parentTrack!._children?.length) {
-        this.track.parentTrack!.originalTrack = undefined;
-      }
-      //Remove parent-track, playcount-track, max-playcount-track and original-Track from unmatched track
-      this.track.parentTrack = undefined;
-      this.track.playcountTrack = undefined;
-      this.track.maxPlaycountTrack = undefined;
-      this.track.originalTrack = undefined;
-    } else throw Error('childTrackIndex was not found');
+    this._trackService.unmatch(this.track);
   }
 
   match(){
     this.matchedTrack.emit(this.track);
   }
 
-  onMatchedTrack(trackMatch: Track){
-    // Add Child-Track to Upper-Track Children
-    if(!this.track._children){ 
-      this.track._children = [trackMatch];
-    } else this.track._children.push(trackMatch);
-
-    // Sort Upper-Track Children
-    this.track._children.sort((a,b) =>
-      b.playcount - a.playcount || 
-      a.name.localeCompare(b.name) || 
-      a.release.year - b.release.year
-    );
-
-    // Set Child-Track's playcount Track
-    if(trackMatch.playcount === this.track.playcount){
-      trackMatch.playcountTrack = this.track;
-    } else {
-      const samePlaycountTracks = this.track._children.filter((t: Track) => t.playcount === trackMatch.playcount);
-      if(samePlaycountTracks[0]!.id === trackMatch.id){
-        samePlaycountTracks.forEach((t: Track) => t.playcountTrack = trackMatch);
-        trackMatch.playcountTrack = undefined;
-      } else {
-        trackMatch.playcountTrack = samePlaycountTracks[0];
-      }
-    }
-
-    // Set Track's Max-Playcount-Track
-    this.setMaxPlaycountTrack([this.track, ...this.track._children]);
-
-    // Set Track's Original-Track
-    this.setOriginalTrack([this.track, ...this.track._children]);
-
-    // Set Child-Track's Parent-Track
-    trackMatch.parentTrack = this.track;
+  onMatchedTrack(childTrack: Track){
+    this._trackService.match(this.track, childTrack);
   }
 
   setPlaycountTrack(){
-    if(!this.track.playcountTrack) return; // Track remains as playcount track (with the same role)
-    // If track is playcount child
-    let playcountTracks = this.track.parentTrack?._children?.filter((t: Track) => t.playcount === this.track.playcount);
-    playcountTracks?.forEach((t: Track) => t.playcountTrack = this.track);
-    this.track.playcountTrack = undefined;
-    this.track.parentTrack?._children && this.setMaxPlaycountTrack([this.track.parentTrack, ...this.track.parentTrack._children]);
-  }
-
-  setOriginalTrack(list: Track[]){
-    let originalTrack = list.sort((a, b) => {
-      let aDate = new Date(a.release.year ?? 0, (a.release.month ?? 1) - 1, a.release.day ?? 1).getTime() + (a.release.timeIndex ?? 0);
-      let bDate = new Date(b.release.year ?? 0, (b.release.month ?? 1) - 1, b.release.day ?? 1).getTime() + (b.release.timeIndex ?? 0);
-      return aDate - bDate;
-    })[0];
-    list.forEach((t: Track) => t.originalTrack = t.id !== originalTrack.id ? originalTrack : undefined);
-  }
-
-  setMaxPlaycountTrack(list: Track[]){
-    let maxPlaycountTrack = list.filter((t: Track) => !t.playcountTrack).sort((a, b) => b.playcount - a.playcount)[0];
-    list.forEach((t: Track) => t.maxPlaycountTrack = t.id !== maxPlaycountTrack.id ? maxPlaycountTrack : undefined);
+    this._trackService.setPlaycountTrack(this.track);
   }
 }
