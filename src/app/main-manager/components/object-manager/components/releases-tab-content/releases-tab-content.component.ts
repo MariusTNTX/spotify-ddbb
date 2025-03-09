@@ -61,10 +61,10 @@ import { View, Column } from '../../../../types';
 
   sortReleasesByDate(isAscendent: boolean): void {
     this.releases.sort((a, b) => {
-      let aDate = new Date(a.year ?? 0, (a.month ?? 1) - 1, a.day ?? 1).getTime();
-      let bDate = new Date(b.year ?? 0, (b.month ?? 1) - 1, b.day ?? 1).getTime();
-      if(aDate === bDate) return isAscendent ? a.timeIndex! - b.timeIndex! : b.timeIndex! - a.timeIndex!;
-      return isAscendent ? aDate - bDate : bDate - aDate;
+      let aTime = a.date.getTime();
+      let bTime = b.date.getTime();
+      if(aTime === bTime) return isAscendent ? a.timeIndex! - b.timeIndex! : b.timeIndex! - a.timeIndex!;
+      return isAscendent ? aTime - bTime : bTime - aTime;
     });
   }
 

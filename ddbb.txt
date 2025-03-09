@@ -6,17 +6,20 @@ Cities
 - id: autoincrement PK
 - name: string(150) nullable=false unique
 - country: string(2) nullable=false FK=Countries.code(Delete Cascade)
-- region: string(5) nullable=false
+- region: string(5) nullable=true
 
 Artists
 - id: string(22) PK
 - name: string(100) nullable=false unique
-- avatarImage: string(url) nullable=false
+- city: number(ID) nullable=false FK=Cities.id,
+- popularity: number(5) nullable=false default=1,
 - lastUpload: date nullable=false default=currentDate
+- style: string(100) nullable=true,
+- formationYear: number(2100) nullable=true,
+- fans: number(100000) nullable=true,
 - monthlyListeners: number(1000000000) nullable=true
 - followers: number(1000000000) nullable=true
 - shareId: string(22) nullable=true
-- headerImage: string(url) nullable=true
 - description: string(20000) nullable=true
 - backBaseColor: string(6) nullable=true
 - hasFullProfile: boolean nullable=true default=false
@@ -39,7 +42,11 @@ ArtistExternalLinks
 ArtistImages
 - id: autoincrement PK
 - artist: number(ID) nullable=false FK=Artists.Id(Delete Cascade)
-- image: string(url) nullable=false
+- url: string(url) nullable=false
+- type: string(20) nullable=false check type='AVATAR'|'HEADER'|'GALLERY'
+- height: number(3000) nullable=false
+- width: number(3000) nullable=false
+- index: number(50) nullable=true
 
 RelatedArtists
 - id: autoincrement PK
@@ -50,17 +57,23 @@ RelatedArtists
 Releases
 - id: string(22) PK
 - name: string(255) nullable=false
-- type: string(20) nullable=true default='ALBUM' check type='ALBUM'|'SINGLE'|'EP'|'COMPILATION'|'LIVE'
-- coverArt: string(url) nullable=false
+- type: string(20) nullable=true default='ALBUM' check type='FULL_LENGTH' | 'ALBUM' | 'SINGLE' | 'EP' | 'COMPILATION' | 'LIVE' | 'DEMO' | 'TRIBUTE' | 'SPLIT' | 'BOOTLEG' | 'VIDEO'
 - totalTracks: number(100) nullable=false
 - timeIndex: number(10) nullable=false default=0
-- year: number(3000) nullable=false
-- month: number(12) nullable=true
-- day: number(31) nullable=true
+- date: Date nullable=false
+- isPreciseDate: boolean nullable=false default=false
 - lastUpload: date nullable=false default=currentDate
 - parentRelease: number(ID) nullable=true FK=Releases.Id
 - shareId: string(22) nullable=true
 - artist: number(ID) nullable=false FK=Artists.Id(Delete Cascade)
+
+ReleaseImages
+- id: autoincrement PK
+- release: number(ID) nullable=false FK=Releases.Id(Delete Cascade)
+- url: string(url) nullable=false
+- height: number(3000) nullable=false
+- width: number(3000) nullable=false
+- index: number(50) nullable=true
 
 Tracks
 - id: string(22) PK

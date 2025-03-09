@@ -61,9 +61,9 @@ export class TracksTabContentComponent implements OnInit {
 
   sortTracksByDate(isAscendent: boolean): void {
     this.tracks.sort((a, b) => {
-      let aDate = new Date(a.release.year ?? 0, (a.release.month ?? 1) - 1, a.release.day ?? 1).getTime();
-      let bDate = new Date(b.release.year ?? 0, (b.release.month ?? 1) - 1, b.release.day ?? 1).getTime();
-      return isAscendent ? aDate - bDate : bDate - aDate;
+      let aTime = a.release.date.getTime();
+      let bTime = b.release.date.getTime();
+      return isAscendent ? aTime - bTime : bTime - aTime;
     });
   }
 

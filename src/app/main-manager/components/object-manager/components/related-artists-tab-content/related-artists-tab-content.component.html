@@ -9,7 +9,7 @@
           <mat-icon>arrow_downward</mat-icon>
         </button>
         <div class="artist__image">
-          <img [src]="artist.targetArtist.avatarImage" class="artist__img">
+          <img [src]="getAvatarImage(artist.targetArtist)" class="artist__img">
         </div>
         <mat-form-field class="form__field artist__name">
           <mat-label>Name</mat-label>
@@ -21,7 +21,7 @@
         </mat-form-field>
         <mat-form-field class="form__field artist__url">
           <mat-label>Image</mat-label>
-          <input matInput [(ngModel)]="artist.targetArtist.avatarImage">
+          <input matInput [value]="artist.targetArtist.avatarImages?.[0]?.url" (input)="onImageChange(artist.targetArtist, $event)">
         </mat-form-field>
       </div>
     }

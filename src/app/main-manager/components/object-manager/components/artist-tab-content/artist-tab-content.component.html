@@ -2,12 +2,12 @@
   <mat-card class="object__artist" appearance="outlined">
 
     <mat-card-header class="artist__header" [style.backgroundColor]="'#'+artists[0].backBaseColor">
-      <div mat-card-avatar class="artist__image-container" [style.backgroundImage]="'url('+artists[0].avatarImage+')'"></div>
+      <div mat-card-avatar class="artist__image-container" [style.backgroundImage]="'url('+avatarImage+')'"></div>
       <mat-card-title class="artist__title">{{ artists[0].name }}</mat-card-title>
       <mat-card-subtitle class="artist__subtitle">({{ artists[0].onList ? 'On List' : 'External' }})</mat-card-subtitle>
     </mat-card-header>
 
-    <img mat-card-image class="artist__image" [src]="artists[0].headerImage">
+    <img mat-card-image class="artist__image" [src]="headerImage">
 
     <mat-card-content class="artist__content" [style.borderColor]="'#'+artists[0].backBaseColor">
       <main class="artist__form">
@@ -50,13 +50,13 @@
         <!-- Avatar Image -->
         <mat-form-field class="form__field artist__avatar-image">
           <mat-label>Avatar Image</mat-label>
-          <input matInput [(ngModel)]="artists[0].avatarImage">
+          <input matInput [value]="avatarImage" (input)="onAvatarImageChange($event)">
         </mat-form-field>
 
         <!-- Header Image -->
         <mat-form-field class="form__field artist__header-image">
           <mat-label>Header Image</mat-label>
-          <input matInput [(ngModel)]="artists[0].headerImage">
+          <input matInput [value]="headerImage" (input)="onHeaderImageChange($event)">
         </mat-form-field>
 
         <!-- Description -->

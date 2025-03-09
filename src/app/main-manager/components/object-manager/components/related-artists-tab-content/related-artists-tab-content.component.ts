@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RelatedArtist } from '../../../../interfaces';
+import { Artist, RelatedArtist } from '../../../../interfaces';
 import { SpotifyObjectsService } from '../../../../services/spotify-objects.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -22,6 +22,17 @@ export class RelatedArtistsTabContentComponent implements OnInit {
 
   ngOnInit() {
     this.relatedArtists = this._spotifyService.relatedArtists;
+  }
+
+  getAvatarImage(artist: Artist) {
+    return artist.avatarImages?.[0]?.url || '';
+  }
+
+  onImageChange(artist: Artist, event: Event) {
+    const input = event.target as HTMLInputElement;
+    if(artist.avatarImages?.[0]?.url) {
+      artist.avatarImages[0].url = input.value;
+    }
   }
 
   onUpArtist(i: number){

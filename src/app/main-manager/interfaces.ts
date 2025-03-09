@@ -1,4 +1,4 @@
-import { ReleaseType } from "./types"
+import { ExternalLinkName, ImageType, ReleaseType } from "./types"
 
 export interface Country {
   code: string, 
@@ -8,17 +8,24 @@ export interface Country {
 export interface City {
   name: string,
   country: Country,
-  region: string
+  region?: string
 }
 
 export interface Artist {
   id: string,
   name: string,
-  avatarImage?: string,
+  style?: string,
+  formationYear?: number,
+  country?: string,
+  city?: string,
+  popularity?: number,
+  fans?: number,
+  avatarImages?: ArtistImage[],
+  headerImages?: ArtistImage[],
+  gallery?: ArtistImage[],
   monthlyListeners?: number,
   followers?: number,
   shareId?: string,
-  headerImage?: string,
   description?: string,
   backBaseColor?: string,
   hasFullProfile?: boolean,
@@ -36,13 +43,17 @@ export interface ArtistTopCity {
 
 export interface ArtistExternalLink {
   artist: Artist,
-  name: 'FACEBOOK'|'INSTAGRAM'|'TWITTER'|'WIKIPEDIA',
+  name: ExternalLinkName,
   url: string
 }
 
 export interface ArtistImage {
   artist: Artist,
-  image: string
+  url: string,
+  type: ImageType,
+  height: number,
+  width: number,
+  index?: number,
 }
 
 export interface RelatedArtist {
@@ -56,18 +67,25 @@ export interface Release {
   name: string,
   normalicedName: string,
   type: ReleaseType,
-  coverArt: string,
   totalTracks: number,
-  year: number,
-  artist: Artist
-  month?: number,
-  day?: number,
+  artist: Artist,
+  date: Date,
+  isPreciseDate: boolean,
+  images?: ReleaseImage[],
   timeIndex?: number,
   parentRelease?: Release,
   shareId?: string,
   lastUpload?: Date,
   tracks?: Track[],
   _children?: Release[]
+}
+
+export interface ReleaseImage {
+  release: Release,
+  url: string,
+  height: number,
+  width: number,
+  index?: number,
 }
 
 export interface Track {
@@ -102,6 +120,7 @@ export interface SpotifyObjects {
   artistImages: ArtistImage[],
   relatedArtists: RelatedArtist[],
   releases: Release[],
+  releaseImages: ReleaseImage[],
   tracks: Track[],
   trackArtists: TrackArtist[]
 }

@@ -9,7 +9,7 @@
     </button>
   }
   <div class="release__image">
-    <img [src]="release.coverArt" class="release__img">
+    <img [src]="release.images?.[0]?.url" class="release__img">
   </div>
   @if(!view || view === 'FORM'){
     <mat-form-field class="form__field release__name" [class]="{ 'release__name--indent': isChild || isMatch }">
@@ -28,15 +28,15 @@
   </mat-form-field>
   <mat-form-field class="form__field release__day">
     <mat-label>Day</mat-label>
-    <input matInput [(ngModel)]="release.day">
+    <input matInput [value]="release.date.getDate()" (input)="onDateChange($event)">
   </mat-form-field>
   <mat-form-field class="form__field release__month">
     <mat-label>Month</mat-label>
-    <input matInput [(ngModel)]="release.month">
+    <input matInput [value]="release.date.getMonth() + 1" (input)="onMonthChange($event)">
   </mat-form-field>
   <mat-form-field class="form__field release__year">
     <mat-label>Year</mat-label>
-    <input matInput [(ngModel)]="release.year">
+    <input matInput [value]="release.date.getFullYear()" (input)="onYearChange($event)">
   </mat-form-field>
   <mat-form-field class="form__field release__type">
     <mat-label>Type</mat-label>

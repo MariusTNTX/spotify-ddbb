@@ -19,7 +19,7 @@
     </button>
   }
   <div class="track__image" matBadge="·" matBadgeColor="warn" matBadgeSize="small" [matBadgeHidden]="view === 'MATCH' || track.originalTrack">
-    <img [src]="track.release.coverArt" class="track__img">
+    <img [src]="track.release.images?.[0]?.url" class="track__img">
   </div>
   @if(!view || view === 'FORM'){
     <mat-form-field class="form__field track__name" [class]="{ 'track__name--indent2': isChild || isMatch }">
@@ -42,7 +42,7 @@
   </mat-form-field>
   <mat-form-field class="form__field track__year">
     <mat-label>Year</mat-label>
-    <input matInput [(ngModel)]="track.release.year">
+    <input matInput  [value]="track.release.date.getFullYear()" (input)="onYearChange($event)">
   </mat-form-field>
   <mat-form-field class="form__field track__type">
     <mat-label>Type</mat-label>

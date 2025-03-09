@@ -37,7 +37,7 @@ export class ReleaseRowComponent implements OnInit {
 
   public query!: string;
   public artists!: Artist[];
-  public types: ReleaseType[] = ['ALBUM', 'SINGLE', 'EP', 'COMPILATION', 'LIVE'];
+  public types: ReleaseType[] = ['FULL_LENGTH', 'ALBUM', 'SINGLE', 'EP', 'COMPILATION', 'VIDEO', 'LIVE', 'DEMO', 'TRIBUTE', 'SPLIT', 'BOOTLEG'];
   public releases!: Release[];
       
   constructor(
@@ -78,5 +78,23 @@ export class ReleaseRowComponent implements OnInit {
       let trackChildren = track.parentTrack ? track.parentTrack._children ?? [] : track._children ?? [];
       this._trackService.setOriginalTrack([ parentTrack, ...trackChildren ]);
     });
+  }
+
+  onDateChange(event: Event): void {
+    const input: HTMLInputElement = event.target as HTMLInputElement;
+    const day: number = parseInt(input.value, 10) || 1;
+    this.release.date.setDate(day);
+  }
+
+  onMonthChange(event: Event): void {
+    const input: HTMLInputElement = event.target as HTMLInputElement;
+    const month: number = parseInt(input.value, 10) || 1;
+    this.release.date.setMonth(month - 1);
+  }
+
+  onYearChange(event: Event): void {
+    const input: HTMLInputElement = event.target as HTMLInputElement;
+    const year: number = parseInt(input.value, 10);
+    year && this.release.date.setFullYear(year);
   }
 }

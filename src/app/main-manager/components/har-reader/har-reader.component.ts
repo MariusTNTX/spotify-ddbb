@@ -25,29 +25,57 @@ export class HarReaderComponent implements OnInit {
     this.fileInput.nativeElement.click();
   }
 
-  onFileSelected(event: Event): void {
+  async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
-    if(!input.files || !input.files.length) {
-      alert('No File Selected');
+  
+    if (!input.files || input.files.length !== 2) {
+      alert(input.files?.length ? 'More or less than two files selected' : 'No File Selected');
       return;
     }
-    const file = input.files[0];
-    if (file.name.split('.').pop()!.toLowerCase() !== 'har') {
-      alert('No HAR File Selected');
-      return;
-    }
-    this.fileName = file.name;
-    const reader = new FileReader();
-    reader.onload = (e: ProgressEvent<FileReader>) => {
-      try {
-        const json: any = JSON.parse(e.target!.result as string);
-        this._harService.setFullBandInfo(json);
-      } catch (error) {
-        alert('HAR Reading Error');
-        throw error;
+  
+    const JSONList: { spotify: any | null; spirit: any | null } = { spotify: null, spirit: null };
+  
+    try {
+      const filePromises = [...input.files].map(file => this.readHarFile(file));
+      const results = await Promise.all(filePromises);
+  
+      for (const json of results) {
+        if (json.log.pages.some((page: any) => page.title.includes('https://open.spotify.com/'))) {
+          JSONList.spotify = json;
+        } else if (json.log.pages.some((page: any) => page.title.includes('https://www.spirit-of-metal.com/'))) {
+          JSONList.spirit = json;
+        }
       }
-    };
-    reader.readAsText(file);
+  
+      if (JSONList.spotify && JSONList.spirit) {
+        this._harService.setFullBandInfo(JSONList.spotify, JSONList.spirit);
+      } else {
+        alert('Missing Data');
+      }
+    } catch (error) {
+      alert(error);
+      throw error;
+    }
+  }
+  
+  private readHarFile(file: File): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (file.name.split('.').pop()?.toLowerCase() !== 'har') {
+        reject('No HAR File Selected');
+        return;
+      }
+  
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        try {
+          const json = JSON.parse(e.target!.result as string);
+          resolve(json);
+        } catch {
+          reject('HAR Reading Error');
+        }
+      };
+      reader.readAsText(file);
+    });
   }
 
   copyToClipboard(): void {

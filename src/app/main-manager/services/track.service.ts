@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { SpotifyObjectsService } from './spotify-objects.service';
 import { Track } from '../interfaces';
 import { ReleaseType } from '../types';
+import { ORDERED_TYPES } from '../constants';
 
 @Injectable({
   providedIn: 'root'
@@ -41,13 +42,12 @@ export class TrackService {
       let bIsParentAlbum = a.release.parentRelease && a.release.parentRelease === b.release;
       if(aIsParentAlbum || bIsParentAlbum) return aIsParentAlbum ? -1 : 1;
       // Type Order
-      let typeOrder: ReleaseType[] = ['ALBUM', 'EP', 'COMPILATION', 'LIVE', 'SINGLE'];
-      let aTypeIndex = typeOrder.findIndex((type: ReleaseType) => type === a.release.type);
-      let bTypeIndex = typeOrder.findIndex((type: ReleaseType) => type === b.release.type);
+      let aTypeIndex = ORDERED_TYPES.findIndex((type: ReleaseType) => type === a.release.type);
+      let bTypeIndex = ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.release.type);
       if(aTypeIndex >= 0 && bTypeIndex >= 0 && aTypeIndex - bTypeIndex !== 0) return aTypeIndex - bTypeIndex;
       // Date
-      let aTime = new Date(a.release.year, (a.release.month ?? 1)-1, (a.release.day ?? 1)).getTime();
-      let bTime = new Date(b.release.year, (b.release.month ?? 1)-1, (b.release.day ?? 1)).getTime();
+      let aTime = a.release.date.getTime();
+      let bTime = b.release.date.getTime();
       if(aTime - bTime !== 0) return aTime - bTime;
       // Name Length
       if(a.name.length - b.name.length !== 0) return a.name.length - b.name.length;
@@ -117,9 +117,9 @@ export class TrackService {
 
   public setOriginalTrack(tracks: Track[]){
     let originalTrack = tracks.sort((a, b) => {
-      let aDate = new Date(a.release.year ?? 0, (a.release.month ?? 1) - 1, a.release.day ?? 1).getTime() + (a.release.timeIndex ?? 0);
-      let bDate = new Date(b.release.year ?? 0, (b.release.month ?? 1) - 1, b.release.day ?? 1).getTime() + (b.release.timeIndex ?? 0);
-      return aDate - bDate;
+      let aTime = a.release.date.getTime() + (a.release.timeIndex ?? 0);
+      let bTime = b.release.date.getTime() + (b.release.timeIndex ?? 0);
+      return aTime - bTime;
     })[0];
     tracks.forEach((t: Track) => t.originalTrack = t.id !== originalTrack.id ? originalTrack : undefined);
   }
@@ -145,13 +145,13 @@ export class TrackService {
       let bIsParentAlbum = a.release.parentRelease && a.release.parentRelease === b.release;
       if(aIsParentAlbum || bIsParentAlbum) return aIsParentAlbum ? -1 : 1;
       // Type Order
-      let typeOrder: ReleaseType[] = ['ALBUM', 'EP', 'COMPILATION', 'LIVE', 'SINGLE'];
+      let typeOrder: ReleaseType[] = ['FULL_LENGTH', 'ALBUM', 'EP', 'COMPILATION', 'LIVE', 'SINGLE', 'DEMO', 'TRIBUTE', 'SPLIT', 'BOOTLEG', 'VIDEO'];
       let aTypeIndex = typeOrder.findIndex((type: ReleaseType) => type === a.release.type);
       let bTypeIndex = typeOrder.findIndex((type: ReleaseType) => type === b.release.type);
       if(aTypeIndex >= 0 && bTypeIndex >= 0 && aTypeIndex - bTypeIndex !== 0) return aTypeIndex - bTypeIndex;
       // Date
-      let aTime = new Date(a.release.year, (a.release.month ?? 1)-1, (a.release.day ?? 1)).getTime();
-      let bTime = new Date(b.release.year, (b.release.month ?? 1)-1, (b.release.day ?? 1)).getTime();
+      let aTime = a.release.date.getTime();
+      let bTime = b.release.date.getTime();
       if(aTime - bTime !== 0) return aTime - bTime;
       // Name Length
       if(a.name.length - b.name.length !== 0) return a.name.length - b.name.length;
@@ -163,8 +163,6 @@ export class TrackService {
       if(aTracks - bTracks !== 0) return aTracks - bTracks;
       return 1;
     });
-
-    console.log(sortedTracks);
 
     sortedTracks.map((track: Track) => {
       !track.parentTrack && sortedTracks
@@ -178,16 +176,23 @@ export class TrackService {
       { regexp: /’|´/g, replace: "'" },
       { regexp: /&/g, replace: 'and' },
       { regexp: /\.\.\./g, replace: '' },
-      { regexp: /^(the|a|an)/, replace: '' },
+      { regexp: /^(the |an |a )/, replace: '' },
       { regexp: /\s+/g, replace: " " },
     ];
     let cleanedName = name.trim().toLowerCase().split(/[\(\-\:]/)[0];
     return replacements.reduce((res: string, { regexp, replace }) => res.replace(regexp, replace), cleanedName).trim();
   };
 
-  private matchedTrackNames(originTrack: Track, targetTrack: Track){
-    const cleanOrigin = originTrack.normalicedName;
-    const cleanTarget = targetTrack.normalicedName;
+  private matchedTrackNames(originTrack: Track | string, targetTrack: Track | string){
+    let cleanOrigin: string;
+    let cleanTarget: string;
+    if(typeof(originTrack) !== 'string' && typeof(targetTrack) !== 'string'){
+      cleanOrigin = originTrack.normalicedName;
+      cleanTarget = targetTrack.normalicedName;
+    } else {
+      cleanOrigin = originTrack as string;
+      cleanTarget = targetTrack as string;
+    }
     return cleanOrigin === cleanTarget || cleanOrigin.startsWith(cleanTarget) || cleanTarget.startsWith(cleanOrigin);
   }
 }

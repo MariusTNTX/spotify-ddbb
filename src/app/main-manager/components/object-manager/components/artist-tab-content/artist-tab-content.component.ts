@@ -22,6 +22,28 @@ export class ArtistTabContentComponent implements OnInit {
 
   constructor(private _spotifyService: SpotifyObjectsService) { }
 
+  get avatarImage(){
+    return this.artists?.[0]?.avatarImages?.[0]?.url || '';
+  }
+
+  get headerImage(){
+    return this.artists?.[0]?.headerImages?.[0]?.url || '';
+  }
+
+  onAvatarImageChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if(this.artists?.[0]?.avatarImages?.[0]?.url) {
+      this.artists[0].avatarImages[0].url = input.value;
+    }
+  }
+
+  onHeaderImageChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if(this.artists?.[0]?.headerImages?.[0]?.url) {
+      this.artists[0].headerImages[0].url = input.value;
+    }
+  }
+
   ngOnInit() {
     this.artists = this._spotifyService.artists;
   }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { SpotifyObjectsService } from './spotify-objects.service';
 import { Release, Track } from '../interfaces';
 import { ReleaseType } from '../types';
+import { ORDERED_TYPES } from '../constants';
 
 @Injectable({
   providedIn: 'root'
@@ -18,14 +19,10 @@ export class ReleaseService {
   }
 
   public hasDuplicates(release: Release): boolean {
-    let currentReleaseDate = new Date(
-      release.year ?? 0, 
-      (release.month ?? 1) - 1, 
-      release.day ?? 1
-    ).getTime() + (release.timeIndex ?? 0);
+    let currentReleaseTime = release.date.getTime() + (release.timeIndex ?? 0);
     return this._spotifyService.releases.some((r: Release) => {
-      let rDate = new Date(r.year ?? 0, (r.month ?? 1) - 1, r.day ?? 1).getTime() + (r.timeIndex ?? 0);
-      return r.id !== release.id && currentReleaseDate === rDate;
+      let rDate = r.date.getTime() + (r.timeIndex ?? 0);
+      return r.id !== release.id && currentReleaseTime === rDate;
     });
   }
 
@@ -64,13 +61,12 @@ export class ReleaseService {
     let sortedReleases = [...this._spotifyService.releases].sort((a: Release, b: Release) => { 
       if(!this.matchedReleaseNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
       // Type Order
-      let typeOrder: ReleaseType[] = ['ALBUM', 'EP', 'COMPILATION', 'LIVE', 'SINGLE'];
-      let aTypeIndex = typeOrder.findIndex((type: ReleaseType) => type === a.type);
-      let bTypeIndex = typeOrder.findIndex((type: ReleaseType) => type === b.type);
+      let aTypeIndex = ORDERED_TYPES.findIndex((type: ReleaseType) => type === a.type);
+      let bTypeIndex = ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.type);
       if(aTypeIndex >= 0 && bTypeIndex >= 0 && aTypeIndex - bTypeIndex !== 0) return aTypeIndex - bTypeIndex;
       // Date
-      let aTime = new Date(a.year, (a.month ?? 1)+1, (a.day ?? 1)).getTime();
-      let bTime = new Date(b.year, (b.month ?? 1)+1, (b.day ?? 1)).getTime();
+      let aTime = a.date.getTime();
+      let bTime = b.date.getTime();
       if(aTime - bTime !== 0) return aTime - bTime;
       // Name Length
       if(a.name.length - b.name.length !== 0) return a.name.length - b.name.length;
@@ -95,16 +91,23 @@ export class ReleaseService {
       { regexp: /’|´/g, replace: "'" },
       { regexp: /&/g, replace: 'and' },
       { regexp: /\.\.\./g, replace: '' },
-      { regexp: /^(the|a|an)/, replace: '' },
+      { regexp: /^(the |an |a )/, replace: '' },
       { regexp: /\s+/g, replace: " " },
     ];
     let cleanedName = name.trim().toLowerCase().split(/[\(\-\:]/)[0];
     return replacements.reduce((res: string, { regexp, replace }) => res.replace(regexp, replace), cleanedName).trim();
   };
 
-  private matchedReleaseNames(originRelease: Release, targetRelease: Release){
-    const cleanOrigin = originRelease.normalicedName;
-    const cleanTarget = targetRelease.normalicedName;
+  public matchedReleaseNames(originRelease: Release | string, targetRelease: Release | string){
+    let cleanOrigin: string;
+    let cleanTarget: string;
+    if(typeof(originRelease) !== 'string' && typeof(targetRelease) !== 'string'){
+      cleanOrigin = originRelease.normalicedName;
+      cleanTarget = targetRelease.normalicedName;
+    } else {
+      cleanOrigin = originRelease as string;
+      cleanTarget = targetRelease as string;
+    }
     return cleanOrigin === cleanTarget || cleanOrigin.startsWith(cleanTarget) || cleanTarget.startsWith(cleanOrigin);
   }
 }

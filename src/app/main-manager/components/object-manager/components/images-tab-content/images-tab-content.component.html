@@ -1,13 +1,15 @@
 @if(images.length){
   <main class="object__images">
     @for(image of images; track image){
-      <div class="images__image">
-        <img [src]="image.image" class="image__img">
-        <mat-form-field class="form__field image__url">
-          <mat-label>URL</mat-label>
-          <input matInput [(ngModel)]="image.image">
-        </mat-form-field>
-      </div>
+      @if(image.type === 'GALLERY' && image.index === 0){
+        <div class="images__image">
+          <img [src]="image.url" class="image__img">
+          <mat-form-field class="form__field image__url">
+            <mat-label>URL</mat-label>
+            <input matInput [(ngModel)]="image.url">
+          </mat-form-field>
+        </div>
+      }
     }
   </main>
 } @else {

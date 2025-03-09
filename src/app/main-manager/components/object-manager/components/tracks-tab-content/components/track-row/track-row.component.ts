@@ -82,4 +82,10 @@ export class TrackRowComponent implements OnInit {
   setPlaycountTrack(){
     this._trackService.setPlaycountTrack(this.track);
   }
+
+  onYearChange(event: Event): void {
+    const input: HTMLInputElement = event.target as HTMLInputElement;
+    const year: number = parseInt(input.value, 10);
+    year && this.track.release.date.setFullYear(year);
+  }
 }
