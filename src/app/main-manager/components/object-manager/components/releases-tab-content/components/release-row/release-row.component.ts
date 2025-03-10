@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ReleaseType, View } from '../../../../../../types';
 import { ReleaseService } from '../../../../../../services/release.service';
 import { TrackService } from '../../../../../../services/track.service';
+import { SPOTIFY_ORDERED_TYPES } from '../../../../../../constants';
 
 @Component({
   selector: 'app-release-row',
@@ -37,7 +38,7 @@ export class ReleaseRowComponent implements OnInit {
 
   public query!: string;
   public artists!: Artist[];
-  public types: ReleaseType[] = ['FULL_LENGTH', 'ALBUM', 'SINGLE', 'EP', 'COMPILATION', 'VIDEO', 'LIVE', 'DEMO', 'TRIBUTE', 'SPLIT', 'BOOTLEG'];
+  public types: ReleaseType[] = SPOTIFY_ORDERED_TYPES;
   public releases!: Release[];
       
   constructor(

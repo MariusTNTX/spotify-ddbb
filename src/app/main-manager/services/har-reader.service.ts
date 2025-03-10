@@ -4,7 +4,7 @@ import { Artist, ArtistImage, Release, ReleaseImage, Track } from '../interfaces
 import { ReleaseType } from '../types';
 import { ReleaseService } from './release.service';
 import { TrackService } from './track.service';
-import { ORDERED_TYPES } from '../constants';
+import { SPIRIT_ORDERED_TYPES, SPOTIFY_ORDERED_TYPES } from '../constants';
 
 @Injectable({
   providedIn: 'root'
@@ -19,12 +19,13 @@ export class HarReaderService {
 
   public setFullBandInfo(spotifyJSON: any, spiritJSON: any){
 
-    /* FULL PROFILE */
+    /* FULL ARTIST PROFILE */
     const artistOverview = this.getArtistOverview(spotifyJSON);
     this.setMainArtist(artistOverview);
     this.setArtistImages(artistOverview);
     this.setTopCities(artistOverview);
     this.setExternalLinks(artistOverview);
+    this.setAdditionalSpiritArtistInfo(spiritJSON);
 
     /* RELATED ARTISTS */
     this.setRelatedArtists(spotifyJSON);
@@ -34,15 +35,11 @@ export class HarReaderService {
 
     /* FULL TRACKS */
     this.setFullTracks(spotifyJSON);
-
-    /* ADDITIONAL ARTIST INFO */
-    this.setAdditionalArtistInfo(spiritJSON);
-
-    /* ADDITIONAL RELEASE INFO */
-    this.setAdditionalReleaseInfo(spiritJSON);
     
     /* RELEASE DEPURATION */
     this._releaseService.depurateReleases();
+    this.setAdditionalSpiritReleaseInfo(spiritJSON);
+    this._releaseService.setParentReleases();
     
     /* TRACK DEPURATION */
     this._trackService.depurateTracks();
@@ -65,7 +62,7 @@ export class HarReaderService {
   }
 
   private setMainArtist(artistOverview: any){
-    this._spotifyService.artists.slice(0, this._spotifyService.artists.length);
+    this._spotifyService.artists.splice(0, this._spotifyService.artists.length);
     this._spotifyService.artists.push({
       id: artistOverview.id,
       name: artistOverview.profile.name,
@@ -82,7 +79,7 @@ export class HarReaderService {
   }
 
   private setArtistImages(artistOverview: any){
-    this._spotifyService.artistImages.slice(0, this._spotifyService.artistImages.length);
+    this._spotifyService.artistImages.splice(0, this._spotifyService.artistImages.length);
     this._spotifyService.artistImages.push(
       ...artistOverview.headerImage.data.sources.map((source: any, index: number) => ({
           artist: this._spotifyService.artists[0],
@@ -118,7 +115,7 @@ export class HarReaderService {
   }
 
   private setTopCities(artistOverview: any){
-    this._spotifyService.artistTopCities.slice(0, this._spotifyService.artistTopCities.length);
+    this._spotifyService.artistTopCities.splice(0, this._spotifyService.artistTopCities.length);
     this._spotifyService.artistTopCities.push(...artistOverview.stats.topCities.items
       .map((item: any, index: number) => {
         let country = this._spotifyService.countries.find((c: any) => c.code === item.country);
@@ -137,7 +134,7 @@ export class HarReaderService {
   }
 
   private setExternalLinks(artistOverview: any){
-    this._spotifyService.artistExternalLinks.slice(0, this._spotifyService.artistExternalLinks.length);
+    this._spotifyService.artistExternalLinks.splice(0, this._spotifyService.artistExternalLinks.length);
     this._spotifyService.artistExternalLinks.push(...artistOverview.profile.externalLinks.items
       .map((link: any) => ({
         artist: this._spotifyService.artists[0],
@@ -148,7 +145,7 @@ export class HarReaderService {
   }
 
   private setRelatedArtists(spotifyJSON: any){
-    this._spotifyService.relatedArtists.slice(0, this._spotifyService.relatedArtists.length);
+    this._spotifyService.relatedArtists.splice(0, this._spotifyService.relatedArtists.length);
     this._spotifyService.relatedArtists.push(...spotifyJSON.log.entries
       .filter((entry: any) => entry.request.url.includes('queryArtistRelated') && entry.response.content.text)
       .map((entry: any) => JSON.parse(entry.response.content.text))
@@ -175,7 +172,7 @@ export class HarReaderService {
   }
 
   private setFullReleases(spotifyJSON: any){
-    this._spotifyService.releases.slice(0, this._spotifyService.releases.length);
+    this._spotifyService.releases.splice(0, this._spotifyService.releases.length);
     this._spotifyService.releases.push(...spotifyJSON.log.entries
       .filter((entry: any) => entry.request.url.includes('queryArtistDiscographyAll') && entry.response.content.text)
       .map((entry: any) => JSON.parse(entry.response.content.text))
@@ -222,7 +219,7 @@ export class HarReaderService {
   }
 
   private setFullTracks(spotifyJSON: any){
-    this._spotifyService.tracks.slice(0, this._spotifyService.tracks.length);
+    this._spotifyService.tracks.splice(0, this._spotifyService.tracks.length);
     this._spotifyService.tracks.push(...spotifyJSON.log.entries
       .filter((entry: any) => entry.request.url.includes('queryAlbumTracks') && entry.response.content.text)
       .map((entry: any) => ({ 
@@ -261,7 +258,7 @@ export class HarReaderService {
     );
   }
 
-  private setAdditionalArtistInfo(spiritJSON: any){
+  private setAdditionalSpiritArtistInfo(spiritJSON: any){
     let htmlString: string = spiritJSON.log.entries.filter(
       (entry: any) => entry.request.url.startsWith('https://www.spirit-of-metal.com/en/band/') && entry.response.content.text
     )[0].response.content.text;
@@ -288,9 +285,10 @@ export class HarReaderService {
     mainArtist.fans = parseInt(getTextByLabel('Fans')) || 0;
   }
 
-  private setAdditionalReleaseInfo(spiritJSON: any){
+  private setAdditionalSpiritReleaseInfo(spiritJSON: any){
     let releaseEntries = spiritJSON.log.entries.filter((entry: any) => entry.request.url.startsWith('https://www.spirit-of-metal.com/ajax/getBandDiscoByType'));
     const parser = new DOMParser();
+
     const spiritReleases: any[] = releaseEntries
       .filter((entry: any, i: number) => releaseEntries.findIndex((e: any) => e.request.url === entry.request.url) === i)
       .map((entry: any) => entry.response.content.text)
@@ -298,68 +296,72 @@ export class HarReaderService {
         const doc = parser.parseFromString(htmlString, 'text/html');
         const htmlReleases: HTMLElement[] = Array.from(doc.querySelectorAll('a'));
         return htmlReleases.map((htmlRelease: HTMLElement) => ({
-            name: htmlRelease.querySelector('h4')?.textContent || '',
-            normalicedName: this._releaseService.normalizeRelease(htmlRelease.querySelector('h4')?.textContent || ''),
-            year: parseInt(htmlRelease.querySelector('div[itemprop="datePublished"]')?.textContent || '0') || undefined,
-            type: htmlRelease.querySelector('div[itemprop="datePublished"]')?.previousSibling?.textContent?.trim()?.replace(' -', '')?.toUpperCase()?.replace('ALBUM','FULL_LENGTH') || 'ALBUM',
-          }));
-        /* return htmlReleases.map((htmlRelease: HTMLElement) => {
-          const releaseExtraInfo = {
-            name: htmlRelease.querySelector('h4')?.textContent || '',
-            normalicedName: this._releaseService.normalizeRelease(htmlRelease.querySelector('h4')?.textContent || ''),
-            year: parseInt(htmlRelease.querySelector('div[itemprop="datePublished"]')?.textContent || '0') || undefined,
-            type: htmlRelease.querySelector('div[itemprop="datePublished"]')?.previousSibling?.textContent?.trim()?.replace(' -', '')?.toUpperCase()?.replace('ALBUM','FULL_LENGTH') || 'ALBUM',
-          };
-
-          const editedRelease = [...this._spotifyService.releases]
-            .filter((release: Release) => this._releaseService.matchedReleaseNames(release.normalicedName, releaseExtraInfo.normalicedName))
-            .sort((a: Release, b: Release) => {
-              // Date
-              if(a.date.getFullYear() === releaseExtraInfo.year) return -1;
-              if(b.date.getFullYear() === releaseExtraInfo.year) return 1;
-              // Name Length
-              if(a.name.length - b.name.length !== 0) return a.name.length - b.name.length;
-              // Type Order
-              let aTypeIndex = ORDERED_TYPES.findIndex((type: ReleaseType) => type === a.type);
-              let bTypeIndex = ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.type);
-              if(aTypeIndex >= 0 && bTypeIndex >= 0 && aTypeIndex - bTypeIndex !== 0) return aTypeIndex - bTypeIndex;
-              // Track Count
-              if(a.tracks && b.tracks && a.tracks.length - b.tracks.length !== 0) return a.tracks.length - b.tracks.length;
-              return 0;
-            })[0];
-            
-          if(editedRelease && (editedRelease.type !== releaseExtraInfo.type || editedRelease.date.getFullYear() !== releaseExtraInfo.year)){
-            let editedTypeIndex: number = ORDERED_TYPES.findIndex((type: ReleaseType) => type === editedRelease.type) || 0;
-            let extraTypeIndex: number = ORDERED_TYPES.findIndex((type: ReleaseType) => type === releaseExtraInfo.type) || 0;
-            if(extraTypeIndex < editedTypeIndex){
-              editedRelease.type = releaseExtraInfo.type as ReleaseType;
-            }
-            if(releaseExtraInfo.year && editedRelease.date.getFullYear() !== releaseExtraInfo.year){
-              editedRelease.date.setTime(new Date(releaseExtraInfo.year, 0, 1).getTime());
-              editedRelease.isPreciseDate = false;
-            }
-            console.log(editedRelease);
-          }
-        }) */
-      });
-    [...this._spotifyService.releases] // TODO Corregir releases de spotify con los de spirit 
-      .sort((a: Release, b: Release) => {
+          name: htmlRelease.querySelector('h4')?.textContent || '',
+          normalicedName: this._releaseService.normalizeRelease(htmlRelease.querySelector('h4')?.textContent || ''),
+          year: parseInt(htmlRelease.querySelector('div[itemprop="datePublished"]')?.textContent || '0') || undefined,
+          type: htmlRelease.querySelector('div[itemprop="datePublished"]')?.previousSibling?.textContent?.trim()?.replace(' -', '')?.toUpperCase()?.replace('ALBUM','FULL_LENGTH') || 'ALBUM',
+        }))
+      })
+      .reduce((spiritReleases: any[], releaseGroup: any) => {
+        spiritReleases.push(...releaseGroup);
+        return spiritReleases;
+      }, [])
+      .filter((spiritRelease: any) =>  SPOTIFY_ORDERED_TYPES.includes(spiritRelease.type))
+      .sort((a: any, b: any) => {
         // Type Order
-        let aTypeIndex = ORDERED_TYPES.findIndex((type: ReleaseType) => type === a.type);
-        let bTypeIndex = ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.type);
+        let aTypeIndex = SPIRIT_ORDERED_TYPES.findIndex((type: ReleaseType) => type === a.type);
+        let bTypeIndex = SPIRIT_ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.type);
         if(aTypeIndex >= 0 && bTypeIndex >= 0 && aTypeIndex - bTypeIndex !== 0) return aTypeIndex - bTypeIndex;
         // Matched Name
         if(!this._releaseService.matchedReleaseNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
         // Name Length
         if(a.name.length - b.name.length !== 0) return a.name.length - b.name.length;
-        // Date
-        let aTime = a.date.getTime();
-        let bTime = b.date.getTime();
-        if(aTime - bTime !== 0) return aTime - bTime;
-        // Track Count
-        if(a.tracks && b.tracks && a.tracks.length - b.tracks.length !== 0) return a.tracks.length - b.tracks.length;
+        // Year
+        if(a.year - b.year !== 0) return a.year - b.year;
         return 1;
       });
+    
+    const spotifyReleases = [...this._spotifyService.releases].sort((a: Release, b: Release) => {
+      // Type Order
+      let aTypeIndex = SPOTIFY_ORDERED_TYPES.findIndex((type: ReleaseType) => type === a.type);
+      let bTypeIndex = SPOTIFY_ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.type);
+      if(aTypeIndex >= 0 && bTypeIndex >= 0 && aTypeIndex - bTypeIndex !== 0) return aTypeIndex - bTypeIndex;
+      // Matched Name
+      if(!this._releaseService.matchedReleaseNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
+      // Name Length
+      if(a.name.length - b.name.length !== 0) return a.name.length - b.name.length;
+      // Date
+      let aTime = a.date.getTime();
+      let bTime = b.date.getTime();
+      if(aTime - bTime !== 0) return aTime - bTime;
+      // Track Count
+      if(a.tracks && b.tracks && a.tracks.length - b.tracks.length !== 0) return a.tracks.length - b.tracks.length;
+      return 1;
+    });
+    
+    spotifyReleases.forEach((spotifyRelease: Release, i: number) => {
+      let spiritRelease = spiritReleases
+        .filter((spiritRelease: any) => spiritRelease.normalicedName === spotifyRelease.normalicedName)
+        .sort((a: any, b: any) => {
+          if(a.name === spotifyRelease.name) return -1;
+          if(b.name === spotifyRelease.name) return 1;
+          return 0;
+        })?.[0];
+        
+      if(spiritRelease){
+        let releaseTypeIndex: number = SPIRIT_ORDERED_TYPES.findIndex((type: ReleaseType) => type === spotifyRelease.type) || 0;
+        let spiritReleaseTypeIndex: number = SPIRIT_ORDERED_TYPES.findIndex((type: ReleaseType) => type === spiritRelease.type) || 0;
+        if(spiritReleaseTypeIndex < releaseTypeIndex){
+          spotifyRelease.type = spiritRelease.type as ReleaseType;
+        }
+        if(spiritRelease.year && spotifyRelease.date.getFullYear() !== spiritRelease.year){
+          spotifyRelease.date.setTime(new Date(spiritRelease.year, 0, 1).getTime());
+          spotifyRelease.isPreciseDate = false;
+        }
+        let spiritReleaseIndex = spiritReleases.findIndex((r: any) => r === spiritRelease);
+        spiritReleaseIndex >= 0 && spiritReleases.splice(spiritReleaseIndex, 1);
+      }
+    });
   }
 
   private convertRgbToHex(base: { alpha: number, blue: number, green: number, red: number }): string {

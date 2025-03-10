@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SpotifyObjectsService } from './spotify-objects.service';
 import { Release, Track } from '../interfaces';
 import { ReleaseType } from '../types';
-import { ORDERED_TYPES } from '../constants';
+import { SPOTIFY_ORDERED_TYPES } from '../constants';
 
 @Injectable({
   providedIn: 'root'
@@ -55,14 +55,17 @@ export class ReleaseService {
         release.type = 'LIVE';
       }
       return release;
-    })
+    });
+  }
 
+  public setParentReleases() {
     // Parent Releases Proposals
     let sortedReleases = [...this._spotifyService.releases].sort((a: Release, b: Release) => { 
+      // Matched Name
       if(!this.matchedReleaseNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
       // Type Order
-      let aTypeIndex = ORDERED_TYPES.findIndex((type: ReleaseType) => type === a.type);
-      let bTypeIndex = ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.type);
+      let aTypeIndex = SPOTIFY_ORDERED_TYPES.findIndex((type: ReleaseType) => type === a.type);
+      let bTypeIndex = SPOTIFY_ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.type);
       if(aTypeIndex >= 0 && bTypeIndex >= 0 && aTypeIndex - bTypeIndex !== 0) return aTypeIndex - bTypeIndex;
       // Date
       let aTime = a.date.getTime();

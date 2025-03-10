@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SpotifyObjectsService } from './spotify-objects.service';
 import { Track } from '../interfaces';
 import { ReleaseType } from '../types';
-import { ORDERED_TYPES } from '../constants';
+import { SPOTIFY_ORDERED_TYPES } from '../constants';
 
 @Injectable({
   providedIn: 'root'
@@ -42,8 +42,8 @@ export class TrackService {
       let bIsParentAlbum = a.release.parentRelease && a.release.parentRelease === b.release;
       if(aIsParentAlbum || bIsParentAlbum) return aIsParentAlbum ? -1 : 1;
       // Type Order
-      let aTypeIndex = ORDERED_TYPES.findIndex((type: ReleaseType) => type === a.release.type);
-      let bTypeIndex = ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.release.type);
+      let aTypeIndex = SPOTIFY_ORDERED_TYPES.findIndex((type: ReleaseType) => type === a.release.type);
+      let bTypeIndex = SPOTIFY_ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.release.type);
       if(aTypeIndex >= 0 && bTypeIndex >= 0 && aTypeIndex - bTypeIndex !== 0) return aTypeIndex - bTypeIndex;
       // Date
       let aTime = a.release.date.getTime();
@@ -145,7 +145,7 @@ export class TrackService {
       let bIsParentAlbum = a.release.parentRelease && a.release.parentRelease === b.release;
       if(aIsParentAlbum || bIsParentAlbum) return aIsParentAlbum ? -1 : 1;
       // Type Order
-      let typeOrder: ReleaseType[] = ['FULL_LENGTH', 'ALBUM', 'EP', 'COMPILATION', 'LIVE', 'SINGLE', 'DEMO', 'TRIBUTE', 'SPLIT', 'BOOTLEG', 'VIDEO'];
+      let typeOrder: ReleaseType[] = SPOTIFY_ORDERED_TYPES;
       let aTypeIndex = typeOrder.findIndex((type: ReleaseType) => type === a.release.type);
       let bTypeIndex = typeOrder.findIndex((type: ReleaseType) => type === b.release.type);
       if(aTypeIndex >= 0 && bTypeIndex >= 0 && aTypeIndex - bTypeIndex !== 0) return aTypeIndex - bTypeIndex;

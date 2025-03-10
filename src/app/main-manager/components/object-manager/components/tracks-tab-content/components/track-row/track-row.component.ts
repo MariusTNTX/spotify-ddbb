@@ -10,6 +10,7 @@ import { SpotifyObjectsService } from '../../../../../../services/spotify-object
 import { ReleaseType, View } from '../../../../../../types';
 import { MatBadgeModule } from '@angular/material/badge';
 import { TrackService } from '../../../../../../services/track.service';
+import { SPOTIFY_ORDERED_TYPES } from '../../../../../../constants';
 
 @Component({
   selector: 'app-track-row',
@@ -36,7 +37,7 @@ export class TrackRowComponent implements OnInit {
   @Output() matchedTrack = new EventEmitter<Track>()
 
   public query!: string;
-  public types: ReleaseType[] = ['ALBUM', 'SINGLE', 'EP', 'COMPILATION', 'LIVE'];
+  public types: ReleaseType[] = SPOTIFY_ORDERED_TYPES;
   public tracks!: Track[];
       
   constructor(
