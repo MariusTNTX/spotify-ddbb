@@ -10,4 +10,4 @@ To deploy to GitHubPages, run:
 ng deploy --base-href=/spotify-har-to-ddbb/
 ```
 
-Once the project is deployed, go to [https://mariustntx.github.io/spotify-har-to-ddbb/home](`https://mariustntx.github.io/spotify-har-to-ddbb/home`). 
+Once the project is deployed, [try it out](`https://mariustntx.github.io/spotify-har-to-ddbb/home`)!. 
