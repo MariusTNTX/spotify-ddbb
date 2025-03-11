@@ -1,4 +1,4 @@
-export type ReleaseType = 'FULL_LENGTH' | 'ALBUM' | 'EP' | 'COMPILATION' | 'LIVE' | 'SINGLE' | 'DEMO';
+export type ReleaseType = 'FULL LENGTH' | 'ALBUM' | 'EP' | 'COMPILATION' | 'LIVE' | 'SINGLE' | 'DEMO';
 
 export type Column = 'NAME' | 'DATE' | 'PLAYS';
 

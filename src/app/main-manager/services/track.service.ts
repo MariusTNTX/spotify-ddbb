@@ -3,13 +3,17 @@ import { SpotifyObjectsService } from './spotify-objects.service';
 import { Track } from '../interfaces';
 import { ReleaseType } from '../types';
 import { SPOTIFY_ORDERED_TYPES } from '../constants';
+import { NameManagerService } from './name-manager.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TrackService {
 
-  constructor(private _spotifyService: SpotifyObjectsService) { }
+  constructor(
+    private _spotifyService: SpotifyObjectsService,
+    private _nameService: NameManagerService,
+  ) { }
 
   public filterFromTrack(track: Track, query: string): Track[] {
     if(query?.length === 0) return [];
@@ -36,7 +40,7 @@ export class TrackService {
       // Playcount
       if(b.playcount - a.playcount !== 0) return b.playcount - a.playcount;
       // Normaliced Name
-      if(!this.matchedTrackNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
+      if(!this._nameService.matchedNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
       // Parent Album
       let aIsParentAlbum = b.release.parentRelease && b.release.parentRelease === a.release;
       let bIsParentAlbum = a.release.parentRelease && a.release.parentRelease === b.release;
@@ -139,7 +143,7 @@ export class TrackService {
     
     // Parent Tracks Proposals
     let sortedTracks = [...tracks].sort((a: Track, b: Track) => { 
-      if(!this.matchedTrackNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
+      if(!this._nameService.matchedNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
       // Parent Album
       let aIsParentAlbum = b.release.parentRelease && b.release.parentRelease === a.release;
       let bIsParentAlbum = a.release.parentRelease && a.release.parentRelease === b.release;
@@ -166,33 +170,8 @@ export class TrackService {
 
     sortedTracks.map((track: Track) => {
       !track.parentTrack && sortedTracks
-        .filter((t: Track) => t.id !== track.id && !t.parentTrack && this.matchedTrackNames(track, t))
+        .filter((t: Track) => t.id !== track.id && !t.parentTrack && this._nameService.matchedNames(track, t))
         .map((childTrack: Track) => this.match(track, childTrack))
     });
-  }
-
-  public normalizeTrack(name: string): string {
-    const replacements: { regexp: RegExp, replace: string }[] = [
-      { regexp: /’|´/g, replace: "'" },
-      { regexp: /&/g, replace: 'and' },
-      { regexp: /\.\.\./g, replace: '' },
-      { regexp: /^(the |an |a )/, replace: '' },
-      { regexp: /\s+/g, replace: " " },
-    ];
-    let cleanedName = name.trim().toLowerCase().split(/[\(\-\:]/)[0];
-    return replacements.reduce((res: string, { regexp, replace }) => res.replace(regexp, replace), cleanedName).trim();
-  };
-
-  private matchedTrackNames(originTrack: Track | string, targetTrack: Track | string){
-    let cleanOrigin: string;
-    let cleanTarget: string;
-    if(typeof(originTrack) !== 'string' && typeof(targetTrack) !== 'string'){
-      cleanOrigin = originTrack.normalicedName;
-      cleanTarget = targetTrack.normalicedName;
-    } else {
-      cleanOrigin = originTrack as string;
-      cleanTarget = targetTrack as string;
-    }
-    return cleanOrigin === cleanTarget || cleanOrigin.startsWith(cleanTarget) || cleanTarget.startsWith(cleanOrigin);
   }
 }

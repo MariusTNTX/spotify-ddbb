@@ -57,7 +57,7 @@ RelatedArtists
 Releases
 - id: string(22) PK
 - name: string(255) nullable=false
-- type: string(20) nullable=true default='ALBUM' check type='FULL_LENGTH' | 'ALBUM' | 'SINGLE' | 'EP' | 'COMPILATION' | 'LIVE' | 'DEMO'
+- type: string(20) nullable=true default='ALBUM' check type='FULL LENGTH' | 'ALBUM' | 'SINGLE' | 'EP' | 'COMPILATION' | 'LIVE' | 'DEMO'
 - totalTracks: number(100) nullable=false
 - timeIndex: number(10) nullable=false default=0
 - date: Date nullable=false

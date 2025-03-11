@@ -3,13 +3,17 @@ import { SpotifyObjectsService } from './spotify-objects.service';
 import { Release, Track } from '../interfaces';
 import { ReleaseType } from '../types';
 import { SPOTIFY_ORDERED_TYPES } from '../constants';
+import { NameManagerService } from './name-manager.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReleaseService {
 
-  constructor(private _spotifyService: SpotifyObjectsService) { }
+  constructor(
+    private _spotifyService: SpotifyObjectsService,
+    private _nameService: NameManagerService,
+  ) { }
 
   public filterFromRelease(release: Release, query: string): Release[] {
     if(query?.length === 0) return [];
@@ -62,7 +66,7 @@ export class ReleaseService {
     // Parent Releases Proposals
     let sortedReleases = [...this._spotifyService.releases].sort((a: Release, b: Release) => { 
       // Matched Name
-      if(!this.matchedReleaseNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
+      if(!this._nameService.matchedNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
       // Type Order
       let aTypeIndex = SPOTIFY_ORDERED_TYPES.findIndex((type: ReleaseType) => type === a.type);
       let bTypeIndex = SPOTIFY_ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.type);
@@ -79,7 +83,7 @@ export class ReleaseService {
     });
     sortedReleases.map((release: Release) => {
       !release.parentRelease && sortedReleases
-        .filter((r: Release) => r.id !== release.id && !r.parentRelease && this.matchedReleaseNames(release, r))
+        .filter((r: Release) => r.id !== release.id && !r.parentRelease && r.type !== 'FULL LENGTH' && this._nameService.matchedNames(release, r))
         .forEach((releaseChild: Release) => {
           releaseChild.parentRelease = release;
           if(release._children) release._children.push(releaseChild);
@@ -87,30 +91,5 @@ export class ReleaseService {
           return releaseChild;
         })
     });
-  }
-
-  public normalizeRelease(name: string): string {
-    const replacements: { regexp: RegExp, replace: string }[] = [
-      { regexp: /’|´/g, replace: "'" },
-      { regexp: /&/g, replace: 'and' },
-      { regexp: /\.\.\./g, replace: '' },
-      { regexp: /^(the |an |a )/, replace: '' },
-      { regexp: /\s+/g, replace: " " },
-    ];
-    let cleanedName = name.trim().toLowerCase().split(/[\(\-\:]/)[0];
-    return replacements.reduce((res: string, { regexp, replace }) => res.replace(regexp, replace), cleanedName).trim();
-  };
-
-  public matchedReleaseNames(originRelease: Release | string, targetRelease: Release | string){
-    let cleanOrigin: string;
-    let cleanTarget: string;
-    if(typeof(originRelease) !== 'string' && typeof(targetRelease) !== 'string'){
-      cleanOrigin = originRelease.normalicedName;
-      cleanTarget = targetRelease.normalicedName;
-    } else {
-      cleanOrigin = originRelease as string;
-      cleanTarget = targetRelease as string;
-    }
-    return cleanOrigin === cleanTarget || cleanOrigin.startsWith(cleanTarget) || cleanTarget.startsWith(cleanOrigin);
   }
 }

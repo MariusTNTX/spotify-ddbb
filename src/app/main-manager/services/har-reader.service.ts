@@ -5,6 +5,7 @@ import { ReleaseType } from '../types';
 import { ReleaseService } from './release.service';
 import { TrackService } from './track.service';
 import { SPIRIT_ORDERED_TYPES, SPOTIFY_ORDERED_TYPES } from '../constants';
+import { NameManagerService } from './name-manager.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class HarReaderService {
     private _spotifyService: SpotifyObjectsService,
     private _releaseService: ReleaseService,
     private _trackService: TrackService,
+    private _nameService: NameManagerService,
   ) { }
 
   public setFullBandInfo(spotifyJSON: any, spiritJSON: any){
@@ -188,7 +190,8 @@ export class HarReaderService {
         let finalRelease: Release = {
           id: release.id,
           name: release.name,
-          normalicedName: this._releaseService.normalizeRelease(release.name),
+          normalicedName: this._nameService.normalizeName(release.name),
+          standaricedName: this._nameService.normalizeName(release.name, false),
           type: release.type,
           totalTracks: release.tracks.totalCount,
           date: new Date(
@@ -233,7 +236,8 @@ export class HarReaderService {
       .map((track: any) => ({
         id: track.uri.replace('spotify:track:',''),
         name: track.name,
-        normalicedName: this._trackService.normalizeTrack(track.name),
+        normalicedName: this._nameService.normalizeName(track.name),
+        standaricedName: this._nameService.normalizeName(track.name, false),
         release: this._spotifyService.releases.find(release => release.id === track.release) ?? undefined,
         playcount: parseInt(track.playcount),
         length: track.duration.totalMilliseconds,
@@ -297,9 +301,10 @@ export class HarReaderService {
         const htmlReleases: HTMLElement[] = Array.from(doc.querySelectorAll('a'));
         return htmlReleases.map((htmlRelease: HTMLElement) => ({
           name: htmlRelease.querySelector('h4')?.textContent || '',
-          normalicedName: this._releaseService.normalizeRelease(htmlRelease.querySelector('h4')?.textContent || ''),
+          normalicedName: this._nameService.normalizeName(htmlRelease.querySelector('h4')?.textContent || ''),
+          standaricedName: this._nameService.normalizeName(htmlRelease.querySelector('h4')?.textContent || '', false),
           year: parseInt(htmlRelease.querySelector('div[itemprop="datePublished"]')?.textContent || '0') || undefined,
-          type: htmlRelease.querySelector('div[itemprop="datePublished"]')?.previousSibling?.textContent?.trim()?.replace(' -', '')?.toUpperCase()?.replace('ALBUM','FULL_LENGTH') || 'ALBUM',
+          type: htmlRelease.querySelector('div[itemprop="datePublished"]')?.previousSibling?.textContent?.trim()?.replace(' -', '')?.toUpperCase()?.replace('ALBUM','FULL LENGTH') || 'ALBUM',
         }))
       })
       .reduce((spiritReleases: any[], releaseGroup: any) => {
@@ -313,7 +318,7 @@ export class HarReaderService {
         let bTypeIndex = SPIRIT_ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.type);
         if(aTypeIndex >= 0 && bTypeIndex >= 0 && aTypeIndex - bTypeIndex !== 0) return aTypeIndex - bTypeIndex;
         // Matched Name
-        if(!this._releaseService.matchedReleaseNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
+        if(!this._nameService.matchedNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
         // Name Length
         if(a.name.length - b.name.length !== 0) return a.name.length - b.name.length;
         // Year
@@ -327,7 +332,7 @@ export class HarReaderService {
       let bTypeIndex = SPOTIFY_ORDERED_TYPES.findIndex((type: ReleaseType) => type === b.type);
       if(aTypeIndex >= 0 && bTypeIndex >= 0 && aTypeIndex - bTypeIndex !== 0) return aTypeIndex - bTypeIndex;
       // Matched Name
-      if(!this._releaseService.matchedReleaseNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
+      if(!this._nameService.matchedNames(a, b)) return a.normalicedName.localeCompare(b.normalicedName);
       // Name Length
       if(a.name.length - b.name.length !== 0) return a.name.length - b.name.length;
       // Date
@@ -340,23 +345,28 @@ export class HarReaderService {
     });
     
     spotifyReleases.forEach((spotifyRelease: Release, i: number) => {
+      console.log('______________________________');
+      console.log('spotifyRelease: ', { name: spotifyRelease.name, nrmName: spotifyRelease.normalicedName, stdName: spotifyRelease.standaricedName, type: spotifyRelease.type, date: spotifyRelease.date });
       let spiritRelease = spiritReleases
-        .filter((spiritRelease: any) => spiritRelease.normalicedName === spotifyRelease.normalicedName)
+        .filter((spiritRelease: any) => spiritRelease.normalicedName === spotifyRelease.normalicedName || spiritRelease.standaricedName === spotifyRelease.standaricedName)
         .sort((a: any, b: any) => {
-          if(a.name === spotifyRelease.name) return -1;
-          if(b.name === spotifyRelease.name) return 1;
+          if(a.name === spotifyRelease.standaricedName) return -1;
+          if(b.name === spotifyRelease.standaricedName) return 1;
           return 0;
         })?.[0];
         
-      if(spiritRelease){
+      if(spiritRelease && spotifyRelease.type !== 'LIVE' && spiritRelease.type !== 'LIVE'){
+        console.log('spiritRelease', JSON.parse(JSON.stringify(spiritRelease)));
         let releaseTypeIndex: number = SPIRIT_ORDERED_TYPES.findIndex((type: ReleaseType) => type === spotifyRelease.type) || 0;
         let spiritReleaseTypeIndex: number = SPIRIT_ORDERED_TYPES.findIndex((type: ReleaseType) => type === spiritRelease.type) || 0;
         if(spiritReleaseTypeIndex < releaseTypeIndex){
           spotifyRelease.type = spiritRelease.type as ReleaseType;
+          console.log('updated type: ', JSON.parse(JSON.stringify(spotifyRelease.type)));
         }
         if(spiritRelease.year && spotifyRelease.date.getFullYear() !== spiritRelease.year){
           spotifyRelease.date.setTime(new Date(spiritRelease.year, 0, 1).getTime());
           spotifyRelease.isPreciseDate = false;
+          console.log('updated date', JSON.parse(JSON.stringify(spotifyRelease.date)));
         }
         let spiritReleaseIndex = spiritReleases.findIndex((r: any) => r === spiritRelease);
         spiritReleaseIndex >= 0 && spiritReleases.splice(spiritReleaseIndex, 1);
