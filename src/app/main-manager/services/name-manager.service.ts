@@ -20,7 +20,7 @@ export class NameManagerService {
     let normalicedTarget: string = (typeof(origin) !== 'string' && typeof(target) !== 'string') ? target.normalicedName : target + '';
     let standaricedOrigin: string = (typeof(origin) !== 'string' && typeof(target) !== 'string') ? origin.standaricedName : origin + '';
     let standaricedTarget: string = (typeof(origin) !== 'string' && typeof(target) !== 'string') ? target.standaricedName : target + '';
-    if(shorten) return normalicedOrigin === normalicedTarget || normalicedOrigin.startsWith(normalicedTarget) || normalicedTarget.startsWith(normalicedOrigin);
+    if(shorten) return normalicedOrigin === normalicedTarget;
     return standaricedOrigin === standaricedTarget || standaricedOrigin.startsWith(standaricedTarget) || standaricedTarget.startsWith(standaricedOrigin);
   }
 
